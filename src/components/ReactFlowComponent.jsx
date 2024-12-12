@@ -16,6 +16,7 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onEdgesChange }) => {
       onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
       fitView
+      nodesDraggable
     >
       <Controls />
       <MiniMap />

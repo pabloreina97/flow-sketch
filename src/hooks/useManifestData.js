@@ -1,14 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import computeLevels from '../utils/computeLevels';
 import computePositions from '../utils/computePositions';
-import { useNodesState, useEdgesState } from '@xyflow/react';
+import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 
 export const useManifestData = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
   const [filteredNodes, setFilteredNodes] = useState([]);
   const [filteredEdges, setFilteredEdges] = useState([]);
+
+  const onNodesChange = useCallback(
+    (changes) => setFilteredNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
+
+  const onEdgesChange = useCallback(
+    (changes) => setFilteredEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  );
+  
   const [visibleTypes, setVisibleTypes] = useState(['model', 'seed', 'source']);
+  const customOnNodesChange = (changes) => {
+    console.log('Cambios detectados por ReactFlow:', changes); // Depura los cambios en nodos
+    onNodesChange(changes); // Aplica los cambios originales de ReactFlow
+  };
 
   useEffect(() => {
     const loadManifest = async () => {
@@ -47,11 +62,11 @@ export const useManifestData = () => {
         const positions = computePositions(levels, manifest, nodesToInclude);
 
         const getNodeBackgroundColor = (id) => {
-          if (id.startsWith('model')) return '#FF5733';
-          if (id.startsWith('source')) return '#33FF57';
-          if (id.startsWith('test')) return '#3357FF';
-          if (id.startsWith('seed')) return '#FF33A1';
-          return '#FFFFFF';
+          if (id.startsWith('model')) return '#F6D6D6';
+          if (id.startsWith('source')) return '#F6F7C4';
+          if (id.startsWith('test')) return '#7BD3EA';
+          if (id.startsWith('seed')) return '#A1EEBD';
+          return '#F8EDED';
         };
 
         const newNodes = Object.entries(manifest.nodes)
@@ -62,6 +77,7 @@ export const useManifestData = () => {
             type: 'tooltipNode',
             data: {
               label: node.name,
+              color: getNodeBackgroundColor(id),
             },
             sourcePosition: 'right',
             targetPosition: 'left',
@@ -170,7 +186,7 @@ export const useManifestData = () => {
   return {
     nodes: filteredNodes,
     edges: filteredEdges,
-    onNodesChange,
+    onNodesChange: customOnNodesChange,
     onEdgesChange,
     applyFilter,
     recalculatePositions,

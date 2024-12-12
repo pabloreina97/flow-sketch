@@ -3,7 +3,7 @@ import { Handle, Position, NodeToolbar } from '@xyflow/react';
  
 const CustomNode = ({ data }) => {
   return (
-    <div className='px-4 py-2 shadow-md rounded-md bg-white'>
+    <div className={'px-4 py-2 shadow-md rounded-md'} style={{ backgroundColor: data.color }}>
       <NodeToolbar
         isVisible={data.toolbarVisible}
         position={data.toolbarPosition}
