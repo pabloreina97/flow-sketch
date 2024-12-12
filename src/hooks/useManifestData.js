@@ -46,14 +46,30 @@ export const useManifestData = () => {
         const levels = computeLevels(manifest, nodesToInclude);
         const positions = computePositions(levels, manifest, nodesToInclude);
 
+        const getNodeBackgroundColor = (id) => {
+          if (id.startsWith('model')) return '#FF5733';
+          if (id.startsWith('source')) return '#33FF57';
+          if (id.startsWith('test')) return '#3357FF';
+          if (id.startsWith('seed')) return '#FF33A1';
+          return '#FFFFFF';
+        };
+
         const newNodes = Object.entries(manifest.nodes)
           .filter(([id]) => nodesToInclude.has(id))
           .map(([id, node]) => ({
             id,
             position: positions[id],
-            data: { label: node.name },
+            type: 'tooltipNode',
+            data: {
+              label: node.name,
+            },
             sourcePosition: 'right',
             targetPosition: 'left',
+            style: {
+              ...node.style,
+              backgroundColor: getNodeBackgroundColor(id),
+              border: '1px solid #dbdbdb',
+            },
           }));
 
         setNodes(newNodes);
