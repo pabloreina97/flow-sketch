@@ -10,39 +10,39 @@ const Toolbar = ({
   visibleTypes,
   onTypeChange,
 }) => (
-  <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 10 }}>
+  <div className="toolbar-container">
     <input
-      type='text'
+      type="text"
       value={filter}
       onChange={onFilterChange}
-      placeholder='Filtrar por modelo'
-      style={{ marginRight: '10px', padding: '5px' }}
+      placeholder="Filtrar por modelo"
+      className="text-sm p-2 border border-gray-700 rounded-lg bg-gray-800 text-white focus:outline-none focus:border-blue-500"
     />
     <button
       onClick={onFilterApply}
-      style={{ padding: '5px 10px', marginRight: '10px' }}
+      className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg px-4 py-2 hover:shadow-lg"
     >
       Actualizar
     </button>
     <button
       onClick={onRecalculatePositions}
-      style={{ padding: '5px 10px', marginRight: '10px' }}
+      className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg px-4 py-2 hover:shadow-lg"
     >
       Recalcular
     </button>
     {['model', 'seed', 'source', 'test'].map((type) => (
-      <label key={type} style={{ marginRight: '10px' }}>
+      <label key={type} className="flex items-center space-x-2 text-sm">
         <input
-          type='checkbox'
+          type="checkbox"
           checked={visibleTypes.includes(type)}
           onChange={() => onTypeChange(type)}
+          className="accent-blue-500"
         />
-        {type}
+        <span className="text-white">{type}</span>
       </label>
     ))}
   </div>
 );
-
 
 Toolbar.propTypes = {
   filter: PropTypes.string.isRequired,
