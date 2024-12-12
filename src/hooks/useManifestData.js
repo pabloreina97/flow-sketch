@@ -18,7 +18,7 @@ export const useManifestData = () => {
     (changes) => setFilteredEdges((eds) => applyEdgeChanges(changes, eds)),
     []
   );
-  
+
   const [visibleTypes, setVisibleTypes] = useState(['model', 'seed', 'source']);
   const customOnNodesChange = (changes) => {
     console.log('Cambios detectados por ReactFlow:', changes); // Depura los cambios en nodos
@@ -78,6 +78,7 @@ export const useManifestData = () => {
             data: {
               label: node.name,
               color: getNodeBackgroundColor(id),
+              info: node,
             },
             sourcePosition: 'right',
             targetPosition: 'left',
@@ -95,70 +96,92 @@ export const useManifestData = () => {
     loadManifest();
   }, []);
 
-  const applyFilter = (filter, types) => {
-    if (!filter) {
-      setFilteredNodes(
-        nodes.filter((node) => types.includes(getNodeType(node.id)))
-      );
-      setFilteredEdges(
-        edges.filter(
-          (edge) =>
-            types.includes(getNodeType(edge.source)) &&
-            types.includes(getNodeType(edge.target))
-        )
-      );
-      return;
-    }
-
-    const matchParents = filter.startsWith('+');
-    const matchChildren = filter.endsWith('+');
-    const nodeName = filter.replace(/\+/g, '').toLowerCase();
-
-    const filteredNodes = nodes.filter(
-      (node) =>
-        node.data.label.toLowerCase().includes(nodeName) &&
-        types.includes(getNodeType(node.id))
-    );
-    const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
-
-    if (matchParents || matchChildren) {
-      const expandNodes = (nodeId, direction) => {
-        edges.forEach((edge) => {
-          if (
-            direction === 'parents' &&
-            edge.target === nodeId &&
-            types.includes(getNodeType(edge.source))
-          ) {
-            filteredNodeIds.add(edge.source);
-            expandNodes(edge.source, direction);
-          } else if (
-            direction === 'children' &&
-            edge.source === nodeId &&
-            types.includes(getNodeType(edge.target))
-          ) {
-            filteredNodeIds.add(edge.target);
-            expandNodes(edge.target, direction);
-          }
-        });
-      };
-
-      filteredNodes.forEach((node) => {
-        if (matchParents) expandNodes(node.id, 'parents');
-        if (matchChildren) expandNodes(node.id, 'children');
-      });
-    }
-
-    const newFilteredEdges = edges.filter(
-      (edge) =>
-        filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
-    );
-    const newFilteredNodes = nodes.filter((node) =>
-      filteredNodeIds.has(node.id)
-    );
-
-    setFilteredNodes(newFilteredNodes);
-    setFilteredEdges(newFilteredEdges);
+const applyFilter = (filter, types) => {
+  const getNodeType = (id) => {
+    if (id.startsWith('model')) return 'model';
+    if (id.startsWith('seed')) return 'seed';
+    if (id.startsWith('source')) return 'source';
+    if (id.startsWith('test')) return 'test';
+    return 'unknown';
   };
+
+  if (!filter) {
+    // Sin filtro: mostrar solo los tipos visibles
+    setFilteredNodes(
+      nodes.filter((node) => types.includes(getNodeType(node.id)))
+    );
+    setFilteredEdges(
+      edges.filter(
+        (edge) =>
+          types.includes(getNodeType(edge.source)) &&
+          types.includes(getNodeType(edge.target))
+      )
+    );
+    return;
+  }
+
+  const nodeName = filter.toLowerCase();
+  const matchParents = filter.startsWith('+');
+  const matchChildren = filter.endsWith('+');
+  const filteredNodeIds = new Set();
+
+  // Expande nodos hacia arriba (padres) y abajo (hijos)
+  const expandNodes = (nodeId, direction) => {
+    edges.forEach((edge) => {
+      if (
+        direction === 'parents' &&
+        edge.target === nodeId &&
+        types.includes(getNodeType(edge.source))
+      ) {
+        if (!filteredNodeIds.has(edge.source)) {
+          filteredNodeIds.add(edge.source);
+          expandNodes(edge.source, direction);
+        }
+      } else if (
+        direction === 'children' &&
+        edge.source === nodeId &&
+        types.includes(getNodeType(edge.target))
+      ) {
+        if (!filteredNodeIds.has(edge.target)) {
+          filteredNodeIds.add(edge.target);
+          expandNodes(edge.target, direction);
+        }
+      }
+    });
+  };
+
+  // Filtra los nodos iniciales según el filtro
+  const initialFilteredNodes = nodes.filter(
+    (node) =>
+      node.data.label.toLowerCase().includes(nodeName) &&
+      types.includes(getNodeType(node.id))
+  );
+
+  initialFilteredNodes.forEach((node) => {
+    filteredNodeIds.add(node.id);
+
+    if (matchParents) expandNodes(node.id, 'parents');
+    if (matchChildren) expandNodes(node.id, 'children');
+  });
+
+  // Si no se especifica "+" en el filtro, expande en ambas direcciones
+  if (!matchParents && !matchChildren) {
+    filteredNodeIds.forEach((nodeId) => {
+      expandNodes(nodeId, 'parents');
+      expandNodes(nodeId, 'children');
+    });
+  }
+
+  // Genera los nuevos nodos y aristas filtrados
+  const newFilteredEdges = edges.filter(
+    (edge) =>
+      filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
+  );
+  const newFilteredNodes = nodes.filter((node) => filteredNodeIds.has(node.id));
+
+  setFilteredNodes(newFilteredNodes);
+  setFilteredEdges(newFilteredEdges);
+};
 
   const recalculatePositions = () => {
     const nodesToInclude = new Set(filteredNodes.map((node) => node.id));
