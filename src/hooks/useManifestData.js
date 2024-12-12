@@ -13,7 +13,7 @@ export const useManifestData = () => {
   useEffect(() => {
     const loadManifest = async () => {
       try {
-        const response = await fetch('/manifest_p.json');
+        const response = await fetch('/manifest_d.json');
         const manifest = await response.json();
 
         const edgeSet = new Set();
