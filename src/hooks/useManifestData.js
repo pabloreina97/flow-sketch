@@ -65,11 +65,6 @@ export const useManifestData = () => {
             },
             sourcePosition: 'right',
             targetPosition: 'left',
-            style: {
-              ...node.style,
-              backgroundColor: getNodeBackgroundColor(id),
-              border: '1px solid #dbdbdb',
-            },
           }));
 
         setNodes(newNodes);

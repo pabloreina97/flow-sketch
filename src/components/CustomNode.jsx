@@ -3,20 +3,25 @@ import { Handle, Position, NodeToolbar } from '@xyflow/react';
  
 const CustomNode = ({ data }) => {
   return (
-    <>
-      <NodeToolbar isVisible={data.toolbarVisible} position={data.toolbarPosition}>
+    <div className='px-4 py-2 shadow-md rounded-md bg-white'>
+      <NodeToolbar
+        isVisible={data.toolbarVisible}
+        position={data.toolbarPosition}
+      >
         <button>delete</button>
         <button>copy</button>
         <button>expand</button>
       </NodeToolbar>
- 
-      <div style={{ padding: '10px 20px' }}>
-        {data.label}
+
+      <div className='text-center'>
+        <div className='text-l font-semibold text-gray-800'>
+          {data.label}
+        </div>
       </div>
- 
-      <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
-    </>
+
+      <Handle type='target' position={Position.Left} />
+      <Handle type='source' position={Position.Right} />
+    </div>
   );
 };
 

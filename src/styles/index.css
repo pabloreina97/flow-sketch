@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -20,20 +21,21 @@ body, html {
 
 .toolbar-container {
   position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  outline: solid 1px #a5a5a5;
+  top: 20px;
+  left: 20px;
   z-index: 10;
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 12px;
   background: #fafafa;
   padding: 16px 24px;
   border-radius: 12px;
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.toolbar-container button {
+.toolbar-container-button {
   padding: 10px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -66,4 +68,12 @@ body, html {
 
 input[type='checkbox'] {
   accent-color: #3b82f6;
+}
+
+.react-flow__node {
+  font-size: 12px;
+  background: #eee;
+  border: 1px solid #555;
+  border-radius: 5px;
+  text-align: center;
 }
