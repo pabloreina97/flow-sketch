@@ -48,7 +48,7 @@ export const loadManifest = async () => {
         data: {
           label: node.name,
           color: getNodeBackgroundColor(id),
-          info: node,
+          node: node,
         },
         sourcePosition: 'right',
         targetPosition: 'left',

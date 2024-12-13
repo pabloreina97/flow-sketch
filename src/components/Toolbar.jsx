@@ -16,17 +16,17 @@ const Toolbar = ({
       value={filter}
       onChange={onFilterChange}
       placeholder='Filtrar por modelo'
-      className='text-sm p-2 border border-gray-700 rounded-lg bg-gray-800 focus:outline-none focus:border-blue-500'
+      className='toolbar-container-input'
     />
     <button
       onClick={onFilterApply}
-      className='toolbar-container-button font-medium rounded-lg px-4 py-2 hover:shadow-lg'
+      className='toolbar-container-button'
     >
       Actualizar
     </button>
     <button
       onClick={onRecalculatePositions}
-      className='toolbar-container-button font-medium rounded-lg px-4 py-2 hover:shadow-lg'
+      className='toolbar-container-button'
     >
       Recalcular
     </button>
