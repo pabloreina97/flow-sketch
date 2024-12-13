@@ -27,7 +27,15 @@ export default function App() {
     fetchManifest();
   }, []);
 
-  // Aplicar el filtro
+  
+  // Aplicar los filtros
+  const handleTypeChange = (type) => {
+    const newTypes = visibleTypes.includes(type)
+      ? visibleTypes.filter((t) => t !== type)
+      : [...visibleTypes, type];
+    setVisibleTypes(newTypes);
+  }
+
   const handleFilterApply = () => {
     const { nodes, edges } = applyFilter(
       filter,
@@ -37,15 +45,8 @@ export default function App() {
     );
     setFilteredNodes(nodes);
     setFilteredEdges(edges);
+    handleTypeChange(visibleTypes);
   };
-
-  const handleTypeChange = (type) => {
-    const newTypes = visibleTypes.includes(type)
-      ? visibleTypes.filter((t) => t !== type)
-      : [...visibleTypes, type];
-    setVisibleTypes(newTypes);
-    handleFilterApply();
-  }
 
   // Manejar cambios en los nodos filtrados
   const handleNodesChange = useCallback(

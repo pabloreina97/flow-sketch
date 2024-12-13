@@ -47,11 +47,11 @@ export const loadManifest = async () => {
     );
 
     // Construir los nodos con posiciones y estilos
-    const getNodeBackgroundColor = (id) => {
-      if (id.startsWith('model')) return '#F6D6D6';
-      if (id.startsWith('source')) return '#F6F7C4';
-      if (id.startsWith('test')) return '#7BD3EA';
-      if (id.startsWith('seed')) return '#A1EEBD';
+    const getNodeBackgroundColor = (node) => {
+      if (node.resource_type === 'model') return '#F6D6D6';
+      if (node.resource_type === 'source') return '#F6F7C4';
+      if (node.resource_type === 'test') return '#7BD3EA';
+      if (node.resource_type === 'seed') return '#D3C4F6';
       return '#F8EDED';
     };
 
@@ -61,7 +61,7 @@ export const loadManifest = async () => {
       type: 'tooltipNode',
       data: {
         label: node.name,
-        color: getNodeBackgroundColor(id),
+        color: getNodeBackgroundColor(node),
         node,
       },
       sourcePosition: 'right',
