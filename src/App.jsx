@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useManifestData } from './hooks/useManifestData';
 import ReactFlowComponent from './components/ReactFlowComponent';
 import Toolbar from './components/Toolbar';
-import computeLevels from './utils/computeLevels';
-import computePositions from './utils/computePositions';
 
 export default function App() {
   const {
