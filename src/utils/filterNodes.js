@@ -1,11 +1,4 @@
-export const applyFilter = (
-  filter,
-  types,
-  nodes,
-  edges,
-  setFilteredNodes,
-  setFilteredEdges
-) => {
+export const applyFilter = (filter, types, nodes, edges) => {
   const getNodeType = (id) => {
     if (id.startsWith('model')) return 'model';
     if (id.startsWith('seed')) return 'seed';
@@ -51,6 +44,7 @@ export const applyFilter = (
 
   initialFilteredNodes.forEach((node) => {
     filteredNodeIds.add(node.id);
+
     if (matchParents) expandNodes(node.id, 'parents');
     if (matchChildren) expandNodes(node.id, 'children');
   });
@@ -62,12 +56,11 @@ export const applyFilter = (
     });
   }
 
-  const newFilteredNodes = nodes.filter((node) => filteredNodeIds.has(node.id));
   const newFilteredEdges = edges.filter(
     (edge) =>
       filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
   );
+  const newFilteredNodes = nodes.filter((node) => filteredNodeIds.has(node.id));
 
-  setFilteredNodes(newFilteredNodes);
-  setFilteredEdges(newFilteredEdges);
+  return { nodes: newFilteredNodes, edges: newFilteredEdges };
 };

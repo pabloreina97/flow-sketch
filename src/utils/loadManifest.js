@@ -1,5 +1,5 @@
-import computeLevels from '../../utils/computeLevels';
-import computePositions from '../../utils/computePositions';
+import computeLevels from './computeLevels';
+import computePositions from './computePositions';
 
 export const loadManifest = async () => {
   try {
@@ -7,7 +7,6 @@ export const loadManifest = async () => {
     const manifest = await response.json();
 
     const edgeSet = new Set();
-
     const edges = Object.entries(manifest.parent_map || {}).flatMap(
       ([nodeId, parents]) => {
         return parents
