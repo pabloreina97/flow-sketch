@@ -6,8 +6,32 @@ export const loadManifest = async () => {
     const response = await fetch('/manifest_d.json');
     const manifest = await response.json();
 
+    // Estos son los nodos que queremos incluir en el gráfico
+    const originalNodes = Object.entries(manifest.nodes).filter(
+      ([, node]) =>
+        node.package_name === 'dbtlearn' ||
+        node.package_name === 'analytics_genially'
+    );
+
+    // Crear un Set con los IDs de nodos disponibles
+    const nodeIds = new Set(originalNodes.map(([id]) => id));
+
+    // Filtrar el parent_map para mantener solo las claves y valores relevantes
+    const cleanParentMap = Object.entries(manifest.parent_map || {})
+      .filter(([key]) => nodeIds.has(key)) // Mantén solo claves que están en los nodos filtrados
+      .reduce((acc, [key, parents]) => {
+        const filteredParents = parents.filter((parent) => nodeIds.has(parent)); // Filtra los valores que estén en los nodos filtrados
+        acc[key] = filteredParents;
+        return acc;
+      }, {});
+
+    // Calcular niveles y posiciones basados en el parent_map limpio
+    const levels = computeLevels(cleanParentMap, nodeIds);
+    const positions = computePositions(levels, manifest, nodeIds);
+
+    // Construir los edges usando el parent_map limpio
     const edgeSet = new Set();
-    const edges = Object.entries(manifest.parent_map || {}).flatMap(
+    const edges = Object.entries(cleanParentMap).flatMap(
       ([nodeId, parents]) => {
         return parents
           .map((parentId) => {
@@ -22,14 +46,7 @@ export const loadManifest = async () => {
       }
     );
 
-    const nodesToInclude = new Set([
-      ...Object.keys(manifest.parent_map || {}),
-      ...Object.values(manifest.parent_map || {}).flat(),
-    ]);
-
-    const levels = computeLevels(manifest, nodesToInclude);
-    const positions = computePositions(levels, manifest, nodesToInclude);
-
+    // Construir los nodos con posiciones y estilos
     const getNodeBackgroundColor = (id) => {
       if (id.startsWith('model')) return '#F6D6D6';
       if (id.startsWith('source')) return '#F6F7C4';
@@ -38,20 +55,18 @@ export const loadManifest = async () => {
       return '#F8EDED';
     };
 
-    const nodes = Object.entries(manifest.nodes)
-      .filter(([id]) => nodesToInclude.has(id))
-      .map(([id, node]) => ({
-        id,
-        position: positions[id],
-        type: 'tooltipNode',
-        data: {
-          label: node.name,
-          color: getNodeBackgroundColor(id),
-          node: node,
-        },
-        sourcePosition: 'right',
-        targetPosition: 'left',
-      }));
+    const nodes = originalNodes.map(([id, node]) => ({
+      id,
+      position: positions[id],
+      type: 'tooltipNode',
+      data: {
+        label: node.name,
+        color: getNodeBackgroundColor(id),
+        node,
+      },
+      sourcePosition: 'right',
+      targetPosition: 'left',
+    }));
 
     return { nodes, edges };
   } catch (error) {

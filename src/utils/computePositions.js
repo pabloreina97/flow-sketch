@@ -1,4 +1,4 @@
-const computePositions = (levels, manifest, nodesToInclude) => {
+const computePositions = (levels, nodesToInclude) => {
   const levelGroups = {};
   const positions = {};
   const nodeWidth = 200; // Ancho fijo para nodos
@@ -31,7 +31,7 @@ const computePositions = (levels, manifest, nodesToInclude) => {
   });
 
   // Validar si faltan nodos
-  nodesToInclude.forEach((nodeId) => {
+  Array.from(nodesToInclude).forEach((nodeId) => {
     if (!positions[nodeId]) {
       console.warn(
         `Nodo sin posición calculada tras procesar niveles: ${nodeId}`

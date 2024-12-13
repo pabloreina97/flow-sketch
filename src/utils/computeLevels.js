@@ -1,4 +1,4 @@
-const computeLevels = (manifest, nodesToInclude) => {
+const computeLevels = (parentMap, nodesToInclude) => {
   const levels = {};
   const unresolved = new Set(nodesToInclude);
 
@@ -9,11 +9,11 @@ const computeLevels = (manifest, nodesToInclude) => {
     unresolved.delete(nodeId);
     let level = 0;
 
-    if (manifest.parent_map[nodeId]) {
+    if (parentMap[nodeId]) {
       level =
         1 +
         Math.max(
-          ...manifest.parent_map[nodeId]
+          ...parentMap[nodeId]
             .filter((dep) => nodesToInclude.has(dep))
             .map(getLevel),
           0
