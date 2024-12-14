@@ -1,5 +1,5 @@
-import computeLevels from '../../utils/computeLevels';
-import computePositions from '../../utils/computePositions';
+import computeLevels from './computeLevels';
+import computePositions from './computePositions';
 
 export const recalculatePositions = (
   filteredNodes,
