@@ -25,9 +25,6 @@ const computeLevels = (parentMap, nodesToInclude) => {
   };
 
   nodesToInclude.forEach(getLevel);
-  
-  console.log('Niveles calculados:', levels);
-  console.log('Nodos no resueltos:', Array.from(unresolved));
 
   return levels;
 };

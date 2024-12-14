@@ -1,9 +1,9 @@
 const computePositions = (levels, nodesToInclude) => {
   const levelGroups = {};
   const positions = {};
-  const nodeWidth = 200; // Ancho fijo para nodos
-  const nodeHeight = 100; // Alto fijo para nodos
-  const levelSpacing = 300; // Separación entre niveles (horizontal)
+  const nodeWidth = 200; // Ancho del nodo
+  const nodeHeight = 100; // Alto del nodo
+  const levelSpacing = 300; // Separación horizontal entre niveles
 
   // Agrupar nodos por niveles
   Object.entries(levels).forEach(([nodeId, level]) => {
@@ -11,12 +11,9 @@ const computePositions = (levels, nodesToInclude) => {
     levelGroups[level].push(nodeId);
   });
 
-  console.log('Grupos por niveles:', levelGroups);
-
+  // Calcular posiciones para cada nivel
   Object.keys(levelGroups).forEach((level) => {
     const nodesInLevel = levelGroups[level];
-    console.log(`Procesando nivel ${level}:`, nodesInLevel);
-
     const totalHeight = nodesInLevel.length * nodeHeight;
     const startX = level * levelSpacing;
     const startY = (window.innerHeight - totalHeight) / 2;
@@ -25,19 +22,8 @@ const computePositions = (levels, nodesToInclude) => {
       const x = startX;
       const y = startY + index * nodeHeight;
 
-      // Asignar posición
       positions[nodeId] = { x, y };
     });
-  });
-
-  // Validar si faltan nodos
-  Array.from(nodesToInclude).forEach((nodeId) => {
-    if (!positions[nodeId]) {
-      console.warn(
-        `Nodo sin posición calculada tras procesar niveles: ${nodeId}`
-      );
-      positions[nodeId] = { x: 0, y: 0 }; // Asignar posición por defecto
-    }
   });
 
   return positions;

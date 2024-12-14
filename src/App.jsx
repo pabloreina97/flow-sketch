@@ -4,6 +4,7 @@ import { ReactFlow, applyNodeChanges } from '@xyflow/react';
 import Toolbar from './components/Toolbar';
 import { loadManifest } from './utils/loadManifest';
 import { applyFilter } from './utils/filterNodes';
+import { recalculatePositions } from './utils/recalculatePositions';
 
 export default function App() {
   // Estados para nodos y aristas
@@ -27,14 +28,13 @@ export default function App() {
     fetchManifest();
   }, []);
 
-  
   // Aplicar los filtros
   const handleTypeChange = (type) => {
     const newTypes = visibleTypes.includes(type)
       ? visibleTypes.filter((t) => t !== type)
       : [...visibleTypes, type];
     setVisibleTypes(newTypes);
-  }
+  };
 
   const handleFilterApply = () => {
     const { nodes, edges } = applyFilter(
@@ -45,15 +45,20 @@ export default function App() {
     );
     setFilteredNodes(nodes);
     setFilteredEdges(edges);
-    handleTypeChange(visibleTypes);
   };
 
   // Manejar cambios en los nodos filtrados
   const handleNodesChange = useCallback(
     (changes) => {
+      // Actualizar las posiciones en filteredNodes
       setFilteredNodes((nds) => applyNodeChanges(changes, nds));
+
+      // Actualizar las posiciones en originalNodes
+      setOriginalNodes(
+        (onds) => applyNodeChanges(changes, onds) // Actualiza las posiciones en los nodos originales
+      );
     },
-    [setFilteredNodes]
+    [setFilteredNodes, setOriginalNodes]
   );
 
   return (
@@ -62,8 +67,11 @@ export default function App() {
         filter={filter}
         onFilterChange={(e) => setFilter(e.target.value)}
         onFilterApply={handleFilterApply}
-        visibleTypes={visibleTypes}
         onTypeChange={handleTypeChange}
+        onRecalculatePositions={() =>
+          recalculatePositions(filteredNodes, filteredEdges, setFilteredNodes)
+        }
+        visibleTypes={visibleTypes}
       />
       <ReactFlowComponent
         nodes={filteredNodes}

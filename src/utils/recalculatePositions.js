@@ -1,23 +1,32 @@
-import computeLevels from './computeLevels';
-import computePositions from './computePositions';
+import computeLevels from '../utils/computeLevels';
+import computePositions from '../utils/computePositions';
 
 export const recalculatePositions = (
   filteredNodes,
   edges,
   setFilteredNodes
 ) => {
+  // Crear un conjunto con los IDs de los nodos actuales
   const nodesToInclude = new Set(filteredNodes.map((node) => node.id));
-  const levels = computeLevels({ parent_map: edges }, nodesToInclude);
-  const positions = computePositions(
-    levels,
-    { nodes: filteredNodes },
-    nodesToInclude
-  );
 
+  // Calcular niveles basados en los nodos y edges actuales
+  const parentMap = edges.reduce((acc, edge) => {
+    if (!acc[edge.target]) acc[edge.target] = [];
+    acc[edge.target].push(edge.source);
+    return acc;
+  }, {});
+
+  const levels = computeLevels(parentMap, nodesToInclude);
+
+  // Calcular posiciones basadas en los niveles
+  const positions = computePositions(levels, nodesToInclude);
+
+  // Actualizar nodos con nuevas posiciones
   const recalculatedNodes = filteredNodes.map((node) => ({
     ...node,
-    position: positions[node.id],
+    position: positions[node.id] || { x: 0, y: 0 }, // Posición por defecto si no se calculó
   }));
 
+  // Actualizar el estado de los nodos
   setFilteredNodes(recalculatedNodes);
 };

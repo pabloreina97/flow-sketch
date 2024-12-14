@@ -22,13 +22,13 @@ const Toolbar = ({
       onClick={onFilterApply}
       className='toolbar-container-button'
     >
-      Actualizar
+      Filtrar
     </button>
     <button
       onClick={onRecalculatePositions}
       className='toolbar-container-button'
     >
-      Recalcular
+      Reorganizar
     </button>
     {['model', 'seed', 'source', 'test'].map((type) => (
       <label key={type} className='flex items-center gap-4 text-sm'>
