@@ -1,9 +1,17 @@
-export const applyFilter = (filter, types, nodes, edges) => {
+import { filterByType } from "./applyFilterType";
+
+export const applyFilter = (filter, visibleTypes, nodes, edges) => {
   const nodeName = filter.toLowerCase();
   const matchParents = filter.startsWith('+');
   const matchChildren = filter.endsWith('+');
 
-  // IDs de los nodos que pasarán el filtro
+  const { nodes: typeFilteredNodes, edges: typeFilteredEdges } = filterByType(
+    visibleTypes,
+    nodes,
+    edges
+  );
+
+
   const filteredNodeIds = new Set();
 
   const expandNodes = (nodeIds, direction) => {
@@ -37,10 +45,13 @@ export const applyFilter = (filter, types, nodes, edges) => {
     }
   };
 
-  const initialFilteredNodes = nodes.filter((node) => {
+  const initialFilteredNodes = typeFilteredNodes.filter((node) => {
     const cleanFilter = filter.replace(/\+/g, '').toLowerCase();
+
+    // Condición adicional: verificar si el tipo está en visibleTypes
+    const matchesType = visibleTypes.includes(node.data.node.resource_type);
     const matchesName = node.data.label.toLowerCase().includes(cleanFilter);
-    const matchesType = types.includes(node.data.node.resource_type);
+
     return matchesName && matchesType;
   });
 
@@ -56,15 +67,10 @@ export const applyFilter = (filter, types, nodes, edges) => {
     expandNodes(expandAll, 'children');
   }
 
-  // Filtrar los nodos y mantener sus posiciones originales
-  const newFilteredNodes = nodes
-    .filter((node) => filteredNodeIds.has(node.id))
-    .map((node) => ({
-      ...node, // Mantener toda la información del nodo intacta
-    }));
-
-  // Filtrar las aristas basadas en los nodos visibles
-  const newFilteredEdges = edges.filter(
+  const newFilteredNodes = typeFilteredNodes.filter((node) =>
+    filteredNodeIds.has(node.id)
+  );
+  const newFilteredEdges = typeFilteredEdges.filter(
     (edge) =>
       filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
   );
