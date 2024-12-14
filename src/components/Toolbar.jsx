@@ -1,6 +1,4 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import FilterInput from './FilterInput';
 
 const Toolbar = ({
   filter,
@@ -50,8 +48,9 @@ Toolbar.propTypes = {
   filter: PropTypes.string.isRequired,
   onFilterChange: PropTypes.func.isRequired,
   onFilterApply: PropTypes.func.isRequired,
-  visibleTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
   onTypeChange: PropTypes.func.isRequired,
+  onRecalculatePositions: PropTypes.func.isRequired,
+  visibleTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default Toolbar;

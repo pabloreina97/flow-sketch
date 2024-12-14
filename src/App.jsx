@@ -3,7 +3,7 @@ import ReactFlowComponent from './components/ReactFlowComponent';
 import { ReactFlow, applyNodeChanges } from '@xyflow/react';
 import Toolbar from './components/Toolbar';
 import { loadManifest } from './utils/loadManifest';
-import { applyFilter } from './utils/filterNodes';
+import { applyFilter } from './utils/applyFilter';
 import { recalculatePositions } from './utils/recalculatePositions';
 
 export default function App() {
