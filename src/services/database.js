@@ -3,7 +3,7 @@ import initSqlJs from 'sql.js';
 let db;
 
 export const initDatabase = async () => {
-  const SQL = await initSqlJs(); // Carga el intérprete SQLite en WebAssembly
+  const SQL = await initSqlJs({locateFile: (file) => `/sql-wasm.wasm`}); // Carga el intérprete SQLite en WebAssembly
   db = new SQL.Database(); // Crea una base de datos en memoria
 
   // Crea la tabla si no existe
@@ -40,4 +40,16 @@ export const loadDiagram = (id) => {
     return { nodes: JSON.parse(nodes), edges: JSON.parse(edges) };
   }
   return null;
+};
+
+export const listDiagrams = () => {
+  const db = getDatabase();
+  const result = db.exec('SELECT id, title, created_at FROM diagrams');
+  return (
+    result[0]?.values.map(([id, title, createdAt]) => ({
+      id,
+      title,
+      createdAt,
+    })) || []
+  );
 };

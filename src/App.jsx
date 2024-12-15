@@ -5,6 +5,7 @@ import Toolbar from './components/Toolbar';
 import { loadManifest } from './utils/loadManifest';
 import { applyFilter } from './utils/applyFilter';
 import { recalculatePositions } from './utils/recalculatePositions';
+import { saveDiagram, listDiagrams, loadDiagram } from './services/database';
 
 export default function App() {
   // Estados para nodos y aristas
@@ -16,6 +17,9 @@ export default function App() {
   const [filter, setFilter] = useState('');
   const [visibleTypes, setVisibleTypes] = useState(['model', 'seed', 'source']);
 
+  const [diagrams, setDiagrams] = useState([]);
+  const [selectedDiagram, setSelectedDiagram] = useState(null);
+
   // Cargar el manifiesto al iniciar la aplicación
   useEffect(() => {
     const fetchManifest = async () => {
@@ -24,6 +28,9 @@ export default function App() {
       setOriginalEdges(edges);
       setFilteredNodes(nodes);
       setFilteredEdges(edges);
+
+      const savedDiagrams = listDiagrams(); // Listar diagramas guardados
+      setDiagrams(savedDiagrams);
     };
     fetchManifest();
   }, []);
@@ -61,6 +68,32 @@ export default function App() {
     [setFilteredNodes, setOriginalNodes]
   );
 
+  // Guardar el diagrama actual
+  const handleSaveDiagram = async (title) => {
+    try {
+      saveDiagram(title, filteredNodes, filteredEdges);
+      const savedDiagrams = listDiagrams();
+      setDiagrams(savedDiagrams);
+      alert('Diagrama guardado con éxito');
+    } catch (error) {
+      console.error('Error al guardar el diagrama:', error);
+    }
+  };
+
+  // Cargar un diagrama seleccionado
+  const handleLoadDiagram = async (id) => {
+    try {
+      const { nodes, edges } = loadDiagram(id);
+      setFilteredNodes(nodes);
+      setFilteredEdges(edges);
+      setOriginalNodes(nodes);
+      setOriginalEdges(edges);
+      setSelectedDiagram(id);
+    } catch (error) {
+      console.error('Error al cargar el diagrama:', error);
+    }
+  };
+
   // Función para eliminar un nodo por su ID
   const deleteNode = (id) => {
     setOriginalNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
@@ -91,6 +124,9 @@ export default function App() {
         }
         visibleTypes={visibleTypes}
         onCreateAnnotationNode={handleCreateAnnotationNode}
+        onSaveDiagram={handleSaveDiagram}
+        diagrams={diagrams}
+        onLoadDiagram={handleLoadDiagram}
       />
       <ReactFlowComponent
         nodes={filteredNodes}
