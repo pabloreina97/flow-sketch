@@ -2,6 +2,7 @@ import React from 'react';
 import { ReactFlow, Controls, MiniMap, Background } from '@xyflow/react';
 import CustomNode from './CustomNode';
 import { useState } from 'react';
+import AnnotationNode from './AnnotationNode';
 
 const ReactFlowComponent = ({ nodes, edges, onNodesChange, onEdgesChange }) => {
   const [currentNodes, setNodes] = useState(nodes);
@@ -34,6 +35,7 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onEdgesChange }) => {
 
   const nodeTypes = {
     tooltipNode: CustomNode,
+    annotationNode: AnnotationNode,
   };
 
   return (
