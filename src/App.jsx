@@ -61,6 +61,12 @@ export default function App() {
     [setFilteredNodes, setOriginalNodes]
   );
 
+  // Función para eliminar un nodo por su ID
+  const deleteNode = (id) => {
+    setOriginalNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
+    setFilteredNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
+  };
+
   const handleCreateAnnotationNode = () => {
     const newNode = {
       id: `annotation-${Date.now()}`,
@@ -90,6 +96,7 @@ export default function App() {
         nodes={filteredNodes}
         edges={filteredEdges}
         onNodesChange={handleNodesChange}
+        onDeleteNode={deleteNode}
       />
     </div>
   );

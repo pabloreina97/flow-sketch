@@ -1,23 +1,40 @@
-import React, { memo, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
-const AnnotationNode = ({ data, selected }) => {
-  const contentEditableRef = useRef(null); // Referencia para el contentEditable
+const AnnotationNode = ({ id, data, selected, deleteNode }) => {
+  const contentEditableRef = useRef(null); // Referencia al contentEditable
 
-  // Actualizar el estado solo cuando el usuario termina de editar
-  const handleBlur = () => {
-    const newText = contentEditableRef.current.textContent;
-    // Aquí puedes actualizar tu estado externo o la base de datos con el nuevo texto
-    console.log('Texto final:', newText);
+  // Enfocar automáticamente cuando el nodo está seleccionado
+  useEffect(() => {
+    if (selected && contentEditableRef.current) {
+      const range = document.createRange();
+      const selection = window.getSelection();
+
+      range.selectNodeContents(contentEditableRef.current); // Selecciona todo el contenido
+      range.collapse(false); // Coloca el cursor al final del texto
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      contentEditableRef.current.focus(); // Enfoca el elemento
+    }
+  }, [selected]);
+
+  // Eliminar nodo al pulsar "Supr"
+  const handleKeyDown = (e) => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      deleteNode(id); // Llama a la función para eliminar el nodo
+    }
   };
 
   return (
-    <div>
+    <div
+      onKeyDown={handleKeyDown} // Escucha la tecla "Delete"
+      tabIndex={0} // Permite que el nodo sea enfocado para eventos de teclado
+    >
       <div
         ref={contentEditableRef}
         contentEditable
         suppressContentEditableWarning
-        onBlur={handleBlur} // Actualizamos el texto al perder el foco
         style={{
           outline: 'none',
           fontSize: '14px',
