@@ -61,6 +61,18 @@ export default function App() {
     [setFilteredNodes, setOriginalNodes]
   );
 
+  const handleCreateAnnotationNode = () => {
+    const newNode = {
+      id: `annotation-${Date.now()}`,
+      type: 'annotationNode',
+      position: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, // Posición inicial
+      data: { label: 'Nueva anotación' },
+    };
+
+    setFilteredNodes((prev) => [...prev, newNode]);
+    setOriginalNodes((prev) => [...prev, newNode]);
+  };
+
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <Toolbar
@@ -72,6 +84,7 @@ export default function App() {
           recalculatePositions(filteredNodes, filteredEdges, setFilteredNodes)
         }
         visibleTypes={visibleTypes}
+        onCreateAnnotationNode={handleCreateAnnotationNode}
       />
       <ReactFlowComponent
         nodes={filteredNodes}

@@ -7,6 +7,7 @@ const Toolbar = ({
   onRecalculatePositions,
   visibleTypes,
   onTypeChange,
+  onCreateAnnotationNode,
 }) => (
   <div className='toolbar-container'>
     <input
@@ -16,10 +17,7 @@ const Toolbar = ({
       placeholder='Filtrar por modelo'
       className='toolbar-container-input'
     />
-    <button
-      onClick={onFilterApply}
-      className='toolbar-container-button'
-    >
+    <button onClick={onFilterApply} className='toolbar-container-button'>
       Filtrar
     </button>
     <button
@@ -28,9 +26,15 @@ const Toolbar = ({
     >
       Reorganizar
     </button>
+    <button
+      onClick={onCreateAnnotationNode}
+      className='toolbar-container-button'
+    >
+      Añadir Anotación
+    </button>
     {['model', 'seed', 'source', 'test'].map((type) => (
       <label key={type} className='flex items-center gap-4 text-sm'>
-        <div className='flex gap-1' >
+        <div className='flex gap-1'>
           <input
             type='checkbox'
             checked={visibleTypes.includes(type)}
@@ -51,6 +55,7 @@ Toolbar.propTypes = {
   onTypeChange: PropTypes.func.isRequired,
   onRecalculatePositions: PropTypes.func.isRequired,
   visibleTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onCreateAnnotationNode: PropTypes.func.isRequired,
 };
 
 export default Toolbar;

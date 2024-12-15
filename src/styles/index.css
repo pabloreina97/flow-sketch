@@ -69,20 +69,28 @@ input[type='checkbox'] {
   accent-color: #3b82f6;
 }
 
-.react-flow__node {
+.react-flow__node-tooltipNode {
   font-size: 12px;
   background: #eee;
   outline: 1px solid #5c5c5c;
   border-radius: 5px;
   text-align: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
-.react-flow__node.selectable:focus {
+.react-flow__node-tooltipNode.selectable.selected {
+  font-size: 12px;
+  background: #eee;
   outline: 1.5px solid #5c5c5c;
+  border-radius: 5px;
+  text-align: center;
   font-weight: 600;
 }
 
-.react-flow__node:hover {
+.react-flow__node-tooltipNode:hover {
   outline: 1.5px solid #5c5c5c;
 }
 
@@ -101,4 +109,17 @@ input[type='checkbox'] {
 
 .tooltip.show {
   opacity: 1;
+}
+
+
+.react-flow__node-annotationNode {
+  background: none; /* Sin fondo */
+  border: none; /* Sin bordes */
+  padding: 4px;
+  font-size: 14px;
+}
+
+.react-flow__node-annotationNode.selectable.selected {
+  outline: 1px dashed #646464; /* Borde solo al seleccionar */
+  padding: 4px;
 }

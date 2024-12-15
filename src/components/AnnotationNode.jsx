@@ -1,26 +1,33 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useRef } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 const AnnotationNode = ({ data, selected }) => {
-  const [label, setLabel] = useState(data.label || 'Escribe aquí');
+  const contentEditableRef = useRef(null); // Referencia para el contentEditable
+
+  // Actualizar el estado solo cuando el usuario termina de editar
+  const handleBlur = () => {
+    const newText = contentEditableRef.current.textContent;
+    // Aquí puedes actualizar tu estado externo o la base de datos con el nuevo texto
+    console.log('Texto final:', newText);
+  };
 
   return (
-    <div
-      className={`annotation-node px-4 py-2 shadow-md rounded-md border ${
-        selected ? 'border-blue-400' : 'border-gray-300'
-      }`}
-      style={{ backgroundColor: '#FFFDE7' }}
-    >
+    <div>
       <div
+        ref={contentEditableRef}
         contentEditable
         suppressContentEditableWarning
-        onInput={(e) => setLabel(e.target.textContent)}
-        style={{ outline: 'none', cursor: 'text' }}
+        onBlur={handleBlur} // Actualizamos el texto al perder el foco
+        style={{
+          outline: 'none',
+          fontSize: '14px',
+          fontFamily: 'Inter, sans-serif',
+          color: '#333',
+          width: '100%',
+        }}
       >
-        {label}
+        {data.label || 'Escribe aquí'}
       </div>
-      <Handle type='target' position={Position.Left} />
-      <Handle type='source' position={Position.Right} />
     </div>
   );
 };

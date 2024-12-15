@@ -61,11 +61,14 @@ export const loadManifest = async () => {
       type: 'tooltipNode',
       data: {
         label: node.name,
-        color: getNodeBackgroundColor(node),
         node,
       },
       sourcePosition: 'right',
       targetPosition: 'left',
+      style: {
+        background: getNodeBackgroundColor(node), // Estilo dinámico
+        ...node.style,
+      },
     }));
 
     return { nodes, edges };
