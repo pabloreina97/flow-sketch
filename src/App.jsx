@@ -5,7 +5,7 @@ import Toolbar from './components/Toolbar';
 import { loadManifest } from './utils/loadManifest';
 import { applyFilter } from './utils/applyFilter';
 import { recalculatePositions } from './utils/recalculatePositions';
-import { saveDiagram, listDiagrams, loadDiagram } from './services/database';
+import { saveDiagram, listDiagrams, loadDiagram } from './services/fileStorage';
 
 export default function App() {
   // Estados para nodos y aristas
@@ -28,9 +28,6 @@ export default function App() {
       setOriginalEdges(edges);
       setFilteredNodes(nodes);
       setFilteredEdges(edges);
-
-      const savedDiagrams = listDiagrams(); // Listar diagramas guardados
-      setDiagrams(savedDiagrams);
     };
     fetchManifest();
   }, []);
@@ -68,31 +65,39 @@ export default function App() {
     [setFilteredNodes, setOriginalNodes]
   );
 
-  // Guardar el diagrama actual
+  // Guardar un diagrama actual
   const handleSaveDiagram = async (title) => {
     try {
-      saveDiagram(title, filteredNodes, filteredEdges);
-      const savedDiagrams = listDiagrams();
-      setDiagrams(savedDiagrams);
+      await saveDiagram(title, filteredNodes, filteredEdges);
+      const updatedDiagrams = await listDiagrams(); // Actualizar la lista después de guardar
+      setDiagrams(updatedDiagrams);
       alert('Diagrama guardado con éxito');
     } catch (error) {
       console.error('Error al guardar el diagrama:', error);
     }
   };
 
-  // Cargar un diagrama seleccionado
-  const handleLoadDiagram = async (id) => {
+  // Cargar un diagrama desde un archivo JSON
+  const handleLoadDiagram = async () => {
     try {
-      const { nodes, edges } = loadDiagram(id);
+      const { nodes, edges } = await loadDiagram();
       setFilteredNodes(nodes);
       setFilteredEdges(edges);
       setOriginalNodes(nodes);
       setOriginalEdges(edges);
-      setSelectedDiagram(id);
     } catch (error) {
       console.error('Error al cargar el diagrama:', error);
     }
   };
+
+  // Listar diagramas guardados
+  useEffect(() => {
+    const fetchDiagrams = async () => {
+      const files = await listDiagrams();
+      setDiagrams(files);
+    };
+    fetchDiagrams();
+  }, []);
 
   // Función para eliminar un nodo por su ID
   const deleteNode = (id) => {
