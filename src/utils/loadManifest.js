@@ -66,7 +66,7 @@ export const loadManifest = async () => {
       sourcePosition: 'right',
       targetPosition: 'left',
       style: {
-        background: getNodeBackgroundColor(node), // Estilo dinámico
+        background: getNodeBackgroundColor(node),
         ...node.style,
       },
     }));

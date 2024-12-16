@@ -21,36 +21,75 @@ const Toolbar = ({
   onCreateAnnotationNode,
 }) => {
   const [showTypesMenu, setShowTypesMenu] = useState(false);
-
+  const [showFileMenu, setShowFileMenu] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
 
   return (
     <div className='toolbar-container'>
-      {/* Filtro */}
+      {/* Menú de archivos */}
       <div className='toolbar-item'>
-        <input
-          type='text'
-          value={filter}
-          onChange={onFilterChange}
-          placeholder='Filtrar'
-          className='toolbar-input'
-        />
         <button
-          onClick={onFilterApply}
+          className='toolbar-button'
+          title='Archivos'
+          onClick={() => setShowFileMenu((prev) => !prev)}
+        >
+          <FaFolderOpen />
+        </button>
+
+        {showFileMenu && (
+          <div className='toolbar-menu'>
+            <button
+              className='toolbar-menu-item'
+              onClick={() => {
+                onLoadDiagram();
+                setShowFileMenu(false); // Cierra el menú
+              }}
+            >
+              Abrir diagrama
+            </button>
+            <button
+              className='toolbar-menu-item'
+              onClick={() => {
+                onSaveDiagram();
+                setShowFileMenu(false); // Cierra el menú
+              }}
+            >
+              Guardar diagrama
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Menú de filtro */}
+      <div className='toolbar-item'>
+        <button
           className='toolbar-button'
           title='Filtrar'
+          onClick={() => setShowFilterMenu((prev) => !prev)}
         >
           <FaFilter />
         </button>
-      </div>
 
-      {/* Guardar */}
-      <button
-        onClick={onSaveDiagram}
-        className='toolbar-button'
-        title='Guardar'
-      >
-        <FaSave />
-      </button>
+        {showFilterMenu && (
+          <div className='toolbar-menu'>
+            <input
+              type='text'
+              placeholder='Filtrar'
+              className='toolbar-input'
+              onChange={(e) => onFilterChange(e)}
+            />
+            <button
+              onClick={() => {
+                onFilterApply();
+                setShowFilterMenu(false); // Cierra el menú
+              }}
+              className='toolbar-menu-item mt-4'
+            >
+              Aplicar filtro
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Reorganizar */}
       <button
@@ -67,41 +106,33 @@ const Toolbar = ({
       </button>
 
       {/* Menú Desplegable de Tipos */}
-      <div className='toolbar-item'>
-        <button
-          onClick={() => setShowTypesMenu((prev) => !prev)}
-          className='toolbar-button'
-          title='Tipos'
-        >
-          <FaLayerGroup />
-        </button>
-
-        {showTypesMenu && (
-          <div className='types-menu'>
-            <h4>Tipos de Nodos</h4>
-            <ul>
-              {['model', 'seed', 'source', 'test'].map((type) => (
-                <li key={type} className='types-menu-item'>
-                  <label>
-                    <input
-                      type='checkbox'
-                      checked={visibleTypes.includes(type)}
-                      onChange={() => onTypeChange(type)}
-                    />
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {/* Abrir diagrama */}
-      <button onClick={onLoadDiagram} className='toolbar-button' title='Abrir'>
-        <FaFolderOpen />
+      <button
+        onClick={() => setShowTypesMenu((prev) => !prev)}
+        className='toolbar-button'
+        title='Tipos'
+      >
+        <FaLayerGroup />
       </button>
 
+      {showTypesMenu && (
+        <div className='toolbar-menu'>
+          <h4>Tipos de recurso</h4>
+          <ul>
+            {['model', 'seed', 'source', 'test'].map((type) => (
+              <li key={type} className='types-menu-item'>
+                <label>
+                  <input
+                    type='checkbox'
+                    checked={visibleTypes.includes(type)}
+                    onChange={() => onTypeChange(type)}
+                  />
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

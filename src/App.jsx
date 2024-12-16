@@ -21,22 +21,28 @@ export default function App() {
   useEffect(() => {
     const fetchManifest = async () => {
       const { nodes, edges } = await loadManifest();
+
+      // 1. Aplicar el filtro inicial (por visibleTypes y filter)
+      const { nodes: filteredByTypeNodes, edges: filteredByTypeEdges } =
+        applyFilter(filter, visibleTypes, nodes, edges);
+
+      // 2. Recalcular posiciones con los nodos ya filtrados
+      const recalculatedNodes = recalculatePositions(
+        filteredByTypeNodes,
+        filteredByTypeEdges
+      );
+
+      // 3. Actualizar los estados con los datos originales y procesados
       setOriginalNodes(nodes);
       setOriginalEdges(edges);
-      setFilteredNodes(nodes);
-      setFilteredEdges(edges);
+      setFilteredNodes(recalculatedNodes);
+      setFilteredEdges(filteredByTypeEdges);
     };
+
     fetchManifest();
-  }, []);
+  }, []); // Solo se ejecuta al montar el componente
 
-  // Aplicar los filtros
-  const handleTypeChange = (type) => {
-    const newTypes = visibleTypes.includes(type)
-      ? visibleTypes.filter((t) => t !== type)
-      : [...visibleTypes, type];
-    setVisibleTypes(newTypes);
-  };
-
+  // Aplicar los filtros manualmente (botón "Aplicar Filtro")
   const handleFilterApply = () => {
     const { nodes, edges } = applyFilter(
       filter,
@@ -48,16 +54,23 @@ export default function App() {
     setFilteredEdges(edges);
   };
 
+  // Manejar cambios en los filtros (filter y visibleTypes)
+  useEffect(() => {
+    const { nodes, edges } = applyFilter(
+      filter,
+      visibleTypes,
+      originalNodes,
+      originalEdges
+    );
+    setFilteredNodes(nodes);
+    setFilteredEdges(edges);
+  }, [filter, visibleTypes, originalNodes, originalEdges]);
+
   // Manejar cambios en los nodos filtrados
   const handleNodesChange = useCallback(
     (changes) => {
-      // Actualizar las posiciones en filteredNodes
       setFilteredNodes((nds) => applyNodeChanges(changes, nds));
-
-      // Actualizar las posiciones en originalNodes
-      setOriginalNodes(
-        (onds) => applyNodeChanges(changes, onds) // Actualiza las posiciones en los nodos originales
-      );
+      setOriginalNodes((onds) => applyNodeChanges(changes, onds));
     },
     [setFilteredNodes, setOriginalNodes]
   );
@@ -89,16 +102,26 @@ export default function App() {
     setFilteredNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
   };
 
+  // Crear un nuevo nodo de anotación
   const handleCreateAnnotationNode = () => {
     const newNode = {
       id: `annotation-${Date.now()}`,
       type: 'annotationNode',
-      position: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, // Posición inicial
+      position: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
       data: { label: 'Nueva anotación' },
     };
 
     setFilteredNodes((prev) => [...prev, newNode]);
     setOriginalNodes((prev) => [...prev, newNode]);
+  };
+
+  // Recalcular posiciones manualmente
+  const handleRecalculatePositions = () => {
+    const recalculatedNodes = recalculatePositions(
+      filteredNodes,
+      filteredEdges
+    );
+    setFilteredNodes(recalculatedNodes);
   };
 
   return (
@@ -107,10 +130,13 @@ export default function App() {
         filter={filter}
         onFilterChange={(e) => setFilter(e.target.value)}
         onFilterApply={handleFilterApply}
-        onTypeChange={handleTypeChange}
-        onRecalculatePositions={() =>
-          recalculatePositions(filteredNodes, filteredEdges, setFilteredNodes)
-        }
+        onTypeChange={(type) => {
+          const newTypes = visibleTypes.includes(type)
+            ? visibleTypes.filter((t) => t !== type)
+            : [...visibleTypes, type];
+          setVisibleTypes(newTypes);
+        }}
+        onRecalculatePositions={handleRecalculatePositions}
         visibleTypes={visibleTypes}
         onCreateAnnotationNode={handleCreateAnnotationNode}
         onSaveDiagram={handleSaveDiagram}
