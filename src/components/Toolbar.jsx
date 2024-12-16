@@ -4,9 +4,9 @@ import {
   FaSave,
   FaFilter,
   FaRedo,
-  FaPlus,
   FaFolderOpen,
   FaLayerGroup,
+  FaComment,
 } from 'react-icons/fa';
 
 const Toolbar = ({
@@ -63,7 +63,7 @@ const Toolbar = ({
 
       {/* Añadir Nodo */}
       <button onClick={onCreateAnnotationNode} className='toolbar-button'>
-        <FaPlus />
+        <FaComment />
       </button>
 
       {/* Menú Desplegable de Tipos */}
