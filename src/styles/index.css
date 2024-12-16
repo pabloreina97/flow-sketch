@@ -187,21 +187,15 @@ input[type='checkbox'] {
 }
 
 .react-flow__node-annotationNode {
-  background-color: #fff; /* Fondo blanco para contraste */
-  border: 1px dashed #ccc; /* Borde visible por defecto */
   padding: 8px;
   font-size: 14px;
-  display: block; /* Cambiado de inline a block */
   min-width: 100px; /* Asegura un tamaño adecuado */
   min-height: 24px; /* Espacio mínimo para texto */
   cursor: pointer; /* Indica que se puede interactuar */
   word-wrap: break-word; /* Permite dividir líneas largas */
 }
 
-.react-flow__node-annotationNode:focus {
-  outline: 1px solid #0078d4; /* Borde azul al enfocar */
-}
-
 .react-flow__node-annotationNode.selectable.selected {
   outline: 1px dashed #646464; /* Borde visible al seleccionar */
+  border-radius: 4px;
 }

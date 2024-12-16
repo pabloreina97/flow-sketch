@@ -4,56 +4,64 @@ import { memo } from 'react';
 const AnnotationNode = ({ data }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.label || 'Escribe aquí');
+  const textareaRef = useRef(null);
 
-  const handleFocus = (e) => {
-    e.stopPropagation();
-    setIsEditing(true);
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    if (data.onChange) {
-      data.onChange(text);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      e.currentTarget.blur();
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'; // Restablece la altura
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Ajusta según el contenido
     }
   };
 
   const handleInput = (e) => {
-    setText(e.currentTarget.innerText);
+    setText(e.target.value);
+    adjustTextareaHeight();
   };
+
+  useEffect(() => {
+    if (isEditing) {
+      adjustTextareaHeight(); // Ajusta la altura inicial al entrar en modo edición
+    }
+  }, [isEditing]);
 
   return (
     <div
-      contentEditable={isEditing}
-      suppressContentEditableWarning={true}
-      onClick={handleFocus}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-      onInput={handleInput}
-      onMouseDown={(e) => e.stopPropagation()}
+      onDoubleClick={() => setIsEditing(true)}
       style={{
+        /* estilos similares a los que tenías */
         padding: '8px',
-        border: isEditing ? '1px solid #0078d4' : '1px dashed #ccc',
         borderRadius: '4px',
         minHeight: '24px',
-        cursor: isEditing ? 'text' : 'pointer',
-        outline: 'none',
-        backgroundColor: '#fff',
+        cursor: 'text',
         whiteSpace: 'pre-wrap',
         wordWrap: 'break-word',
       }}
-      tabIndex={0}
     >
-      {text}
+      {isEditing ? (
+        <textarea
+          ref={textareaRef}
+          value={text}
+          onChange={handleInput}
+          onBlur={() => {
+            setIsEditing(false);
+            data.onChange && data.onChange(text);
+          }}
+          style={{
+            background: 'transparent',
+            width: '100%',
+            height: '100%',
+            outline: 'none',
+            resize: 'none',
+            font: 'inherit',
+            overflow: 'hidden',
+          }}
+          autoFocus
+        />
+      ) : (
+        text
+      )}
     </div>
   );
 };
-
 
 export default memo(AnnotationNode);
