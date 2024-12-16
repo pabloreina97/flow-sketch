@@ -130,7 +130,7 @@ export default function App() {
 
     setFilteredNodes((prev) => [...prev, newNode]);
   };
-  
+
   // Recalcular posiciones manualmente
   const handleRecalculatePositions = () => {
     const recalculatedNodes = recalculatePositions(

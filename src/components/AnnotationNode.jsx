@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { memo } from 'react';
-
-const AnnotationNode = ({ data }) => {
+import { NodeResizer } from '@xyflow/react';
+const AnnotationNode = ({ data, selected }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.label || 'Escribe aquí');
   const textareaRef = useRef(null);
@@ -37,6 +37,7 @@ const AnnotationNode = ({ data }) => {
         wordWrap: 'break-word',
       }}
     >
+      <NodeResizer minWidth={100} minHeight={30} isVisible={selected} />
       {isEditing ? (
         <textarea
           ref={textareaRef}
