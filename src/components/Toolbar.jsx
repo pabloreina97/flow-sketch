@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  FaFilter,
-  FaRedo,
-  FaFolderOpen,
-  FaLayerGroup,
-  FaComment,
-} from 'react-icons/fa';
+  BsBarChartSteps,
+  BsFileEarmark,
+  BsFilter,
+  BsInputCursor,
+  BsStack,
+} from 'react-icons/bs';
 
 const Toolbar = ({
   fileName,
@@ -21,9 +21,24 @@ const Toolbar = ({
   onTypeChange,
   onCreateAnnotationNode,
 }) => {
-  const [showTypesMenu, setShowTypesMenu] = useState(false);
-  const [showFileMenu, setShowFileMenu] = useState(false);
-  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null); // Estado único para controlar los menús
+
+  const handleMenuToggle = (menuName) => {
+    setActiveMenu((prevMenu) => (prevMenu === menuName ? null : menuName));
+  };
+
+  const handleClickOutside = (event) => {
+    if (!event.target.closest('.toolbar-container')) {
+      setActiveMenu(null); // Cierra los menús si haces clic fuera del toolbar
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className='toolbar-container'>
@@ -32,18 +47,18 @@ const Toolbar = ({
         <button
           className='toolbar-button'
           title='Archivos'
-          onClick={() => setShowFileMenu((prev) => !prev)}
+          onClick={() => handleMenuToggle('fileMenu')}
         >
-          <FaFolderOpen />
+          <BsFileEarmark />
         </button>
 
-        {showFileMenu && (
+        {activeMenu === 'fileMenu' && (
           <div className='toolbar-menu'>
             <button
               className='toolbar-menu-item'
               onClick={() => {
                 onLoadDiagram();
-                setShowFileMenu(false);
+                setActiveMenu(null); // Cierra el menú
               }}
             >
               Abrir diagrama
@@ -52,7 +67,7 @@ const Toolbar = ({
               className='toolbar-menu-item'
               onClick={() => {
                 onSaveDiagram();
-                setShowFileMenu(false); // Cierra el menú
+                setActiveMenu(null); // Cierra el menú
               }}
             >
               Guardar diagrama
@@ -66,12 +81,12 @@ const Toolbar = ({
         <button
           className='toolbar-button'
           title='Filtrar'
-          onClick={() => setShowFilterMenu((prev) => !prev)}
+          onClick={() => handleMenuToggle('filterMenu')}
         >
-          <FaFilter />
+          <BsFilter />
         </button>
 
-        {showFilterMenu && (
+        {activeMenu === 'filterMenu' && (
           <div className='toolbar-menu'>
             <input
               type='text'
@@ -82,12 +97,42 @@ const Toolbar = ({
             <button
               onClick={() => {
                 onFilterApply();
-                setShowFilterMenu(false); // Cierra el menú
+                setActiveMenu(null); // Cierra el menú
               }}
               className='toolbar-menu-item mt-4'
             >
               Aplicar filtro
             </button>
+          </div>
+        )}
+      </div>
+
+      {/* Menú Desplegable de Tipos */}
+      <div className='toolbar-item'>
+        <button
+          onClick={() => handleMenuToggle('typesMenu')}
+          className='toolbar-button'
+          title='Tipos'
+        >
+          <BsStack />
+        </button>
+        {activeMenu === 'typesMenu' && (
+          <div className='toolbar-menu'>
+            <h4>Tipos de recurso</h4>
+            <ul>
+              {['model', 'seed', 'source', 'test'].map((type) => (
+                <li key={type} className='types-menu-item'>
+                  <label>
+                    <input
+                      type='checkbox'
+                      checked={visibleTypes.includes(type)}
+                      onChange={() => onTypeChange(type)}
+                    />
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </label>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>
@@ -98,45 +143,22 @@ const Toolbar = ({
         className='toolbar-button'
         title='Reorganizar'
       >
-        <FaRedo />
+        <BsBarChartSteps />
       </button>
 
       {/* Añadir Nodo */}
-      <button onClick={onCreateAnnotationNode} className='toolbar-button'>
-        <FaComment />
-      </button>
-
-      {/* Menú Desplegable de Tipos */}
       <button
-        onClick={() => setShowTypesMenu((prev) => !prev)}
+        onClick={() => onCreateAnnotationNode()}
         className='toolbar-button'
-        title='Tipos'
       >
-        <FaLayerGroup />
+        <BsInputCursor />
       </button>
-
-      {showTypesMenu && (
-        <div className='toolbar-menu'>
-          <h4>Tipos de recurso</h4>
-          <ul>
-            {['model', 'seed', 'source', 'test'].map((type) => (
-              <li key={type} className='types-menu-item'>
-                <label>
-                  <input
-                    type='checkbox'
-                    checked={visibleTypes.includes(type)}
-                    onChange={() => onTypeChange(type)}
-                  />
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {/* Mostrar nombre del archivo */}
-      <span className='px-2' style={{ fontStyle: isModified ? 'italic' : 'normal' }}>
+      <span
+        className='px-2'
+        style={{ fontStyle: isModified ? 'italic' : 'normal' }}
+      >
         {fileName.replace('.json', '')}
       </span>
     </div>

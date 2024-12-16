@@ -8,7 +8,7 @@ const ReactFlowComponent = ({
   nodes,
   edges,
   onNodesChange,
-  onEdgesChange,
+  onDeleteNode,
 }) => {
   const [currentNodes, setNodes] = useState(nodes);
 
@@ -48,7 +48,6 @@ const ReactFlowComponent = ({
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
       onSelectionChange={handleSelectionChange}
       nodeTypes={nodeTypes}
       fitView
