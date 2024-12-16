@@ -1,4 +1,4 @@
-import { filterByType } from "./applyFilterType";
+import { filterByType } from './applyFilterType';
 
 export const applyFilter = (filter, visibleTypes, nodes, edges) => {
   const nodeName = filter.toLowerCase();
@@ -11,68 +11,73 @@ export const applyFilter = (filter, visibleTypes, nodes, edges) => {
     edges
   );
 
-
-  const filteredNodeIds = new Set();
-
   const expandNodes = (nodeIds, direction) => {
-    let hasNewNodes = false;
+    const expandedNodeIds = new Set(nodeIds); // Nodos iniciales
+    let hasNewNodes;
 
-    nodeIds.forEach((nodeId) => {
+    do {
+      hasNewNodes = false;
+
       edges.forEach((edge) => {
         if (
           direction === 'parents' &&
-          edge.target === nodeId &&
-          !filteredNodeIds.has(edge.source)
+          expandedNodeIds.has(edge.target) &&
+          !expandedNodeIds.has(edge.source)
         ) {
-          filteredNodeIds.add(edge.source);
+          expandedNodeIds.add(edge.source);
           hasNewNodes = true;
         } else if (
           direction === 'children' &&
-          edge.source === nodeId &&
-          !filteredNodeIds.has(edge.target)
+          expandedNodeIds.has(edge.source) &&
+          !expandedNodeIds.has(edge.target)
         ) {
-          filteredNodeIds.add(edge.target);
+          expandedNodeIds.add(edge.target);
           hasNewNodes = true;
         }
       });
-    });
+    } while (hasNewNodes);
 
-    if (hasNewNodes) {
-      const newNodes = Array.from(filteredNodeIds).filter(
-        (id) => !nodeIds.includes(id)
-      );
-      expandNodes(newNodes, direction);
-    }
+    return expandedNodeIds;
   };
 
+  // Filtrar nodos iniciales según el filtro de texto y tipos visibles
   const initialFilteredNodes = typeFilteredNodes.filter((node) => {
     const cleanFilter = filter.replace(/\+/g, '').toLowerCase();
 
-    // Condición adicional: verificar si el tipo está en visibleTypes
     const matchesType = visibleTypes.includes(node.data.node.resource_type);
     const matchesName = node.data.label.toLowerCase().includes(cleanFilter);
 
     return matchesName && matchesType;
   });
 
-  initialFilteredNodes.forEach((node) => {
-    filteredNodeIds.add(node.id);
-    if (matchParents) expandNodes([node.id], 'parents');
-    if (matchChildren) expandNodes([node.id], 'children');
-  });
+  const filteredNodeIds = new Set(initialFilteredNodes.map((node) => node.id));
 
-  if (!matchParents && !matchChildren) {
-    const expandAll = Array.from(filteredNodeIds);
-    expandNodes(expandAll, 'parents');
-    expandNodes(expandAll, 'children');
+  // Expandir padres e hijos independientemente
+  let parentIds = new Set();
+  let childIds = new Set();
+
+  if (matchParents) {
+    parentIds = expandNodes([...filteredNodeIds], 'parents');
   }
 
+  if (matchChildren) {
+    childIds = expandNodes([...filteredNodeIds], 'children');
+  }
+
+  // Tomar la unión de los nodos iniciales, padres y/o hijos
+  const resultNodeIds = new Set([
+    ...filteredNodeIds,
+    ...parentIds,
+    ...childIds,
+  ]);
+
+  // Filtrar nodos y aristas finales
   const newFilteredNodes = typeFilteredNodes.filter((node) =>
-    filteredNodeIds.has(node.id)
+    resultNodeIds.has(node.id)
   );
+
   const newFilteredEdges = typeFilteredEdges.filter(
-    (edge) =>
-      filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
+    (edge) => resultNodeIds.has(edge.source) && resultNodeIds.has(edge.target)
   );
 
   return { nodes: newFilteredNodes, edges: newFilteredEdges };

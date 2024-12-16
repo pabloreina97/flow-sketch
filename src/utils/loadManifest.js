@@ -3,7 +3,7 @@ import computePositions from './computePositions';
 
 export const loadManifest = async () => {
   try {
-    const response = await fetch('/manifest_d.json');
+    const response = await fetch('/manifest_p.json');
     const manifest = await response.json();
 
     // Estos son los nodos que queremos incluir en el gráfico
