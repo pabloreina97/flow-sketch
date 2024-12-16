@@ -8,7 +8,6 @@ import {
   FaFolderOpen,
   FaLayerGroup,
 } from 'react-icons/fa';
-import Modal from './Modal';
 
 const Toolbar = ({
   filter,
@@ -16,26 +15,13 @@ const Toolbar = ({
   onFilterApply,
   onRecalculatePositions,
   onSaveDiagram,
-  diagrams,
   onLoadDiagram,
   visibleTypes,
   onTypeChange,
   onCreateAnnotationNode,
 }) => {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [diagramTitle, setDiagramTitle] = useState('');
-  const [showDiagramList, setShowDiagramList] = useState(false);
-  const [showTypesMenu, setShowTypesMenu] = useState(false); // Estado para mostrar/ocultar el menú de tipos
+  const [showTypesMenu, setShowTypesMenu] = useState(false);
 
-  const handleSaveClick = () => {
-    setModalOpen(true); // Abre el modal
-  };
-
-  const handleSaveConfirm = () => {
-    onSaveDiagram(diagramTitle);
-    setDiagramTitle('');
-    setModalOpen(false);
-  };
 
   return (
     <div className='toolbar-container'>
@@ -59,7 +45,7 @@ const Toolbar = ({
 
       {/* Guardar */}
       <button
-        onClick={handleSaveClick}
+        onClick={onSaveDiagram}
         className='toolbar-button'
         title='Guardar'
       >
@@ -78,15 +64,6 @@ const Toolbar = ({
       {/* Añadir Nodo */}
       <button onClick={onCreateAnnotationNode} className='toolbar-button'>
         <FaPlus />
-      </button>
-
-      {/* Mostrar Lista de Diagramas */}
-      <button
-        onClick={() => setShowDiagramList((prev) => !prev)}
-        className='toolbar-button'
-        title='Abrir'
-      >
-        <FaFolderOpen />
       </button>
 
       {/* Menú Desplegable de Tipos */}
@@ -120,46 +97,11 @@ const Toolbar = ({
         )}
       </div>
 
-      {/* Lista de Diagramas Guardados */}
-      {showDiagramList && (
-        <div className='diagram-list'>
-          <h4>Diagramas Guardados</h4>
-          <ul>
-            {diagrams.map((diagram) => (
-              <li key={diagram.id} className='diagram-list-item'>
-                <span>{diagram.title}</span>
-                <button
-                  onClick={() => {
-                    onLoadDiagram(diagram.id);
-                    setShowDiagramList(false);
-                  }}
-                  className='toolbar-button'
-                  title='Cargar'
-                >
-                  <FaFolderOpen />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Abrir diagrama */}
+      <button onClick={onLoadDiagram} className='toolbar-button' title='Abrir'>
+        <FaFolderOpen />
+      </button>
 
-      {/* Modal para ingresar título */}
-      <Modal
-        title='Guardar Diagrama'
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onConfirm={handleSaveConfirm}
-      >
-        <input
-          type='text'
-          placeholder='Título del diagrama'
-          value={diagramTitle}
-          onChange={(e) => setDiagramTitle(e.target.value)}
-          className='toolbar-input'
-          style={{ width: '100%', marginBottom: '8px' }}
-        />
-      </Modal>
     </div>
   );
 };
@@ -171,12 +113,6 @@ Toolbar.propTypes = {
   onTypeChange: PropTypes.func.isRequired,
   onRecalculatePositions: PropTypes.func.isRequired,
   onSaveDiagram: PropTypes.func.isRequired,
-  diagrams: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-    })
-  ).isRequired,
   onLoadDiagram: PropTypes.func.isRequired,
   visibleTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
   onCreateAnnotationNode: PropTypes.func.isRequired,

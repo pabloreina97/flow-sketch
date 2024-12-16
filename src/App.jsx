@@ -5,7 +5,7 @@ import Toolbar from './components/Toolbar';
 import { loadManifest } from './utils/loadManifest';
 import { applyFilter } from './utils/applyFilter';
 import { recalculatePositions } from './utils/recalculatePositions';
-import { saveDiagram, listDiagrams, loadDiagram } from './services/fileStorage';
+import { saveDiagram, loadDiagram } from './services/fileStorage';
 
 export default function App() {
   // Estados para nodos y aristas
@@ -16,9 +16,6 @@ export default function App() {
 
   const [filter, setFilter] = useState('');
   const [visibleTypes, setVisibleTypes] = useState(['model', 'seed', 'source']);
-
-  const [diagrams, setDiagrams] = useState([]);
-  const [selectedDiagram, setSelectedDiagram] = useState(null);
 
   // Cargar el manifiesto al iniciar la aplicación
   useEffect(() => {
@@ -66,11 +63,9 @@ export default function App() {
   );
 
   // Guardar un diagrama actual
-  const handleSaveDiagram = async (title) => {
+  const handleSaveDiagram = async () => {
     try {
-      await saveDiagram(title, filteredNodes, filteredEdges);
-      const updatedDiagrams = await listDiagrams(); // Actualizar la lista después de guardar
-      setDiagrams(updatedDiagrams);
+      await saveDiagram(filteredNodes, filteredEdges);
       alert('Diagrama guardado con éxito');
     } catch (error) {
       console.error('Error al guardar el diagrama:', error);
@@ -83,21 +78,10 @@ export default function App() {
       const { nodes, edges } = await loadDiagram();
       setFilteredNodes(nodes);
       setFilteredEdges(edges);
-      setOriginalNodes(nodes);
-      setOriginalEdges(edges);
     } catch (error) {
       console.error('Error al cargar el diagrama:', error);
     }
   };
-
-  // Listar diagramas guardados
-  useEffect(() => {
-    const fetchDiagrams = async () => {
-      const files = await listDiagrams();
-      setDiagrams(files);
-    };
-    fetchDiagrams();
-  }, []);
 
   // Función para eliminar un nodo por su ID
   const deleteNode = (id) => {
@@ -130,7 +114,6 @@ export default function App() {
         visibleTypes={visibleTypes}
         onCreateAnnotationNode={handleCreateAnnotationNode}
         onSaveDiagram={handleSaveDiagram}
-        diagrams={diagrams}
         onLoadDiagram={handleLoadDiagram}
       />
       <ReactFlowComponent
