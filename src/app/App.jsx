@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import ReactFlowComponent from './components/ReactFlowComponent';
+import ReactFlowComponent from '../components/ReactFlowComponent';
 import { ReactFlow, applyNodeChanges } from '@xyflow/react';
-import Toolbar from './components/Toolbar';
-import { loadManifest } from './utils/loadManifest';
-import { applyFilter } from './utils/applyFilter';
-import { recalculatePositions } from './utils/recalculatePositions';
-import { saveDiagram, loadDiagram } from './services/fileStorage';
+import Toolbar from '../components/Toolbar';
+import { loadManifest } from '../utils/loadManifest';
+import { applyFilter } from '../utils/applyFilter';
+import { recalculatePositions } from '../utils/recalculatePositions';
+import { saveDiagram, loadDiagram } from '../services/fileStorage';
 
 export default function App() {
   // Estados para nodos y aristas
@@ -16,6 +16,9 @@ export default function App() {
 
   const [filter, setFilter] = useState('');
   const [visibleTypes, setVisibleTypes] = useState(['model', 'seed', 'source']);
+
+  const [fileName, setFileName] = useState('Sin título');
+  const [isModified, setIsModified] = useState(false);
 
   // Cargar el manifiesto al iniciar la aplicación
   useEffect(() => {
@@ -70,16 +73,17 @@ export default function App() {
   const handleNodesChange = useCallback(
     (changes) => {
       setFilteredNodes((nds) => applyNodeChanges(changes, nds));
-      setOriginalNodes((onds) => applyNodeChanges(changes, onds));
+      setIsModified(true);
     },
-    [setFilteredNodes, setOriginalNodes]
+    [setFilteredNodes]
   );
 
   // Guardar un diagrama actual
   const handleSaveDiagram = async () => {
     try {
-      await saveDiagram(filteredNodes, filteredEdges);
-      alert('Diagrama guardado con éxito');
+      const savedFileName = await saveDiagram(filteredNodes, filteredEdges);
+      setFileName(savedFileName);
+      setIsModified(false);
     } catch (error) {
       console.error('Error al guardar el diagrama:', error);
     }
@@ -88,9 +92,11 @@ export default function App() {
   // Cargar un diagrama desde un archivo JSON
   const handleLoadDiagram = async () => {
     try {
-      const { nodes, edges } = await loadDiagram();
+      const { nodes, edges, name } = await loadDiagram();
       setFilteredNodes(nodes);
       setFilteredEdges(edges);
+      setIsModified(false);
+      setFileName(name);
     } catch (error) {
       console.error('Error al cargar el diagrama:', error);
     }
@@ -127,6 +133,8 @@ export default function App() {
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <Toolbar
+        fileName={fileName}
+        isModified={isModified}
         filter={filter}
         onFilterChange={(e) => setFilter(e.target.value)}
         onFilterApply={handleFilterApply}

@@ -10,11 +10,12 @@ export const saveDiagram = async (nodes, edges) => {
   const blob = new Blob([diagramData], { type: 'application/json' });
 
   try {
-    await fileSave(blob, {
+    const fileHandle = await fileSave(blob, {
       extensions: ['.json'],
       description: 'Guardar diagrama JSON',
+      suggestedName: 'diagram.json', // Nombre sugerido por defecto
     });
-    console.log(`Diagrama guardado con éxito.`);
+    return fileHandle.name;
   } catch (error) {
     console.error('Error al guardar el diagrama:', error);
   }
@@ -33,7 +34,7 @@ export const loadDiagram = async () => {
     });
 
     const text = await file.text();
-    return JSON.parse(text);
+    return { ...JSON.parse(text), name: file.name };
   } catch (error) {
     console.error('Error al cargar el archivo:', error);
     return null;

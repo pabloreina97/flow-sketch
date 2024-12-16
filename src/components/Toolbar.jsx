@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  FaSave,
   FaFilter,
   FaRedo,
   FaFolderOpen,
@@ -10,6 +9,8 @@ import {
 } from 'react-icons/fa';
 
 const Toolbar = ({
+  fileName,
+  isModified,
   filter,
   onFilterChange,
   onFilterApply,
@@ -42,7 +43,7 @@ const Toolbar = ({
               className='toolbar-menu-item'
               onClick={() => {
                 onLoadDiagram();
-                setShowFileMenu(false); // Cierra el menú
+                setShowFileMenu(false);
               }}
             >
               Abrir diagrama
@@ -133,6 +134,11 @@ const Toolbar = ({
           </ul>
         </div>
       )}
+
+      {/* Mostrar nombre del archivo */}
+      <span className='px-2' style={{ fontStyle: isModified ? 'italic' : 'normal' }}>
+        {fileName}
+      </span>
     </div>
   );
 };
