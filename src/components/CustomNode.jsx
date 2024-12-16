@@ -3,17 +3,18 @@ import { Handle, Position, NodeToolbar } from '@xyflow/react';
  
 const CustomNode = ({ data, selected }) => {
   return (
-    <div
-    >
+    <div>
       <NodeToolbar
         isVisible={selected}
         position={Position.Top}
         align='center'
         offset={40}
       >
-        <div className={`tooltip ${selected ? 'show' : ''}`}>
-          {data.node.resource_type}
-        </div>
+        <ul className={`tooltip ${selected ? 'show' : ''}`}>
+          {Object.keys(data.node.columns).map((key) => (
+            <li key={key}>{key}</li>
+          ))}
+        </ul>
       </NodeToolbar>
 
       <div className='text-center'>
