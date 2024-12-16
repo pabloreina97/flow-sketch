@@ -114,29 +114,23 @@ export default function App() {
       id: `annotation-${Date.now()}`,
       type: 'annotationNode',
       position: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-      data: { label: 'Escribe aquí' },
+      data: {
+        label: 'Escribe aquí',
+        onChange: (newText) => {
+          setFilteredNodes((prevNodes) =>
+            prevNodes.map((node) =>
+              node.id === newNode.id
+                ? { ...node, data: { ...node.data, label: newText } }
+                : node
+            )
+          );
+        },
+      },
     };
-    
+
     setFilteredNodes((prev) => [...prev, newNode]);
   };
   
-  // Editar nodo de anotación
-  const handleLabelChange = (id, newLabel) => {
-    setFilteredNodes((nodes) =>
-      nodes.map((node) =>
-        node.id === id
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                label: newLabel.trim(), // Actualiza el texto del nodo
-              },
-            }
-          : node
-      )
-    );
-  };
-
   // Recalcular posiciones manualmente
   const handleRecalculatePositions = () => {
     const recalculatedNodes = recalculatePositions(
@@ -165,13 +159,12 @@ export default function App() {
         onCreateAnnotationNode={handleCreateAnnotationNode}
         onSaveDiagram={handleSaveDiagram}
         onLoadDiagram={handleLoadDiagram}
-        />
+      />
       <ReactFlowComponent
         nodes={filteredNodes}
         edges={filteredEdges}
         onNodesChange={handleNodesChange}
         onDeleteNode={deleteNode}
-        onEditAnnotationNode={handleLabelChange}
       />
     </div>
   );

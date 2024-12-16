@@ -9,8 +9,6 @@ const ReactFlowComponent = ({
   edges,
   onNodesChange,
   onEdgesChange,
-  onDeleteNode,
-  onEditAnnotationNode,
 }) => {
   const [currentNodes, setNodes] = useState(nodes);
 
@@ -52,15 +50,7 @@ const ReactFlowComponent = ({
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onSelectionChange={handleSelectionChange}
-      nodeTypes={{
-        annotationNode: (props) => (
-          <AnnotationNode
-            {...props}
-            deleteNode={onDeleteNode}
-            onLabelChange={onEditAnnotationNode}
-          />
-        ),
-      }}
+      nodeTypes={nodeTypes}
       fitView
     >
       <Controls />
