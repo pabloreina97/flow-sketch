@@ -137,7 +137,7 @@ const Toolbar = ({
 
       {/* Mostrar nombre del archivo */}
       <span className='px-2' style={{ fontStyle: isModified ? 'italic' : 'normal' }}>
-        {fileName}
+        {fileName.replace('.json', '')}
       </span>
     </div>
   );

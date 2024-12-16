@@ -4,7 +4,14 @@ import CustomNode from './CustomNode';
 import { useState } from 'react';
 import AnnotationNode from './AnnotationNode';
 
-const ReactFlowComponent = ({ nodes, edges, onNodesChange, onEdgesChange, onDeleteNode }) => {
+const ReactFlowComponent = ({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onDeleteNode,
+  onEditAnnotationNode,
+}) => {
   const [currentNodes, setNodes] = useState(nodes);
 
   const handleSelectionChange = (selection) => {
@@ -47,7 +54,11 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onEdgesChange, onDele
       onSelectionChange={handleSelectionChange}
       nodeTypes={{
         annotationNode: (props) => (
-          <AnnotationNode {...props} deleteNode={onDeleteNode} />
+          <AnnotationNode
+            {...props}
+            deleteNode={onDeleteNode}
+            onLabelChange={onEditAnnotationNode}
+          />
         ),
       }}
       fitView

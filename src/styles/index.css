@@ -191,6 +191,7 @@ input[type='checkbox'] {
   border: none; /* Sin bordes */
   padding: 4px;
   font-size: 14px;
+  display:inline
 }
 
 .react-flow__node-annotationNode.selectable.selected {

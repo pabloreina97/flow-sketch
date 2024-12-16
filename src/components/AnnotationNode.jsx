@@ -1,52 +1,83 @@
-import React, { memo, useEffect, useRef } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import React, { memo, useState, useRef, useEffect } from 'react';
 
-const AnnotationNode = ({ id, data, selected, deleteNode }) => {
-  const contentEditableRef = useRef(null); // Referencia al contentEditable
+function AnnotationNode({ data, onLabelChange }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const contentRef = useRef(null);
 
-  // Enfocar automáticamente cuando el nodo está seleccionado
-  useEffect(() => {
-    if (selected && contentEditableRef.current) {
-      const range = document.createRange();
-      const selection = window.getSelection();
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+  };
 
-      range.selectNodeContents(contentEditableRef.current); // Selecciona todo el contenido
-      range.collapse(false); // Coloca el cursor al final del texto
-      selection.removeAllRanges();
-      selection.addRange(range);
-
-      contentEditableRef.current.focus(); // Enfoca el elemento
-    }
-  }, [selected]);
-
-  // Eliminar nodo al pulsar "Supr"
-  const handleKeyDown = (e) => {
-    if (e.key === 'Delete' || e.key === 'Backspace') {
-      deleteNode(id); // Llama a la función para eliminar el nodo
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (contentRef.current) {
+      const newLabel = contentRef.current.textContent.trim();
+      if (newLabel !== data.label) {
+        onLabelChange(newLabel);
+      }
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      e.preventDefault();
+      contentRef.current?.blur();
+    }
+  };
+
+  const adjustHeight = () => {
+    if (contentRef.current) {
+      contentRef.current.style.height = 'auto'; // Reiniciar altura para recálculo
+      contentRef.current.style.height = `${contentRef.current.scrollHeight}px`; // Ajustar al contenido
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing && contentRef.current) {
+      contentRef.current.focus();
+
+      // Seleccionar todo el texto al iniciar edición
+      const range = document.createRange();
+      range.selectNodeContents(contentRef.current);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+
+      // Ajustar altura inicial
+      adjustHeight();
+    }
+  }, [isEditing]);
+
+  // Ajustar altura al cambiar el contenido
+  useEffect(() => {
+    adjustHeight();
+  }, [data.label]);
+
   return (
     <div
-      onKeyDown={handleKeyDown} // Escucha la tecla "Delete"
-      tabIndex={0} // Permite que el nodo sea enfocado para eventos de teclado
+      ref={contentRef}
+      contentEditable={isEditing}
+      onDoubleClick={handleDoubleClick}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      onInput={adjustHeight} // Detectar cambios en el contenido
+      suppressContentEditableWarning={true}
+      style={{
+        cursor: isEditing ? 'text' : 'pointer',
+        outline: isEditing ? '1px solid #4a90e2' : 'none',
+        padding: '4px',
+        width: '200px', // Ancho fijo
+        minHeight: '20px', // Altura mínima
+        maxHeight: 'none', // Sin límite de altura
+        overflow: 'hidden', // Sin scroll interno
+        wordBreak: 'break-word', // Romper palabras largas
+        lineHeight: '1.2',
+        fontSize: '14px',
+      }}
     >
-      <div
-        ref={contentEditableRef}
-        contentEditable
-        suppressContentEditableWarning
-        style={{
-          outline: 'none',
-          fontSize: '14px',
-          fontFamily: 'Inter, sans-serif',
-          color: '#333',
-          width: '100%',
-        }}
-      >
-        {data.label || 'Escribe aquí'}
-      </div>
+      {data.label}
     </div>
   );
-};
+}
 
 export default memo(AnnotationNode);
