@@ -1,4 +1,11 @@
-const findPathToRoot = (startNodeId, edges, rootNodeId) => {
+export const findRootNode = (filter, nodes) => {
+  const cleanFilter = filter.replace(/\+/g, '').toLowerCase();
+  return nodes.find((node) =>
+    node.data.label.toLowerCase().includes(cleanFilter)
+  );
+};
+
+export const findPathToRoot = (startNodeId, edges, rootNodeId) => {
   const path = []; // Almacena los edges del camino
   const visited = new Set(); // Evita visitar edges repetidos
 
@@ -73,5 +80,3 @@ const findPathToRoot = (startNodeId, edges, rootNodeId) => {
 
   return path;
 };
-
-export default findPathToRoot;

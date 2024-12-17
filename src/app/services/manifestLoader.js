@@ -1,5 +1,5 @@
-import computeLevels from './computeLevels';
-import computePositions from './computePositions';
+import computeLevels from '../../utils/computeLevels';
+import computePositions from '../../utils/computePositions';
 
 export const loadManifest = async () => {
   try {

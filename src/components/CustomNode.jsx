@@ -2,8 +2,9 @@ import { memo, useState, useEffect, useRef } from 'react';
 import { Handle, Position, NodeToolbar } from '@xyflow/react';
 import { GoDatabase } from 'react-icons/go';
 
-const CustomNode = ({ data, selected }) => {
+const CustomNode = ({ data }) => {
   const [visibleTooltip, setVisibleTooltip] = useState(false);
+  const [isHovered, setHovered] = useState(false);
   const nodeRef = useRef(null);
 
   const toogleTooltip = () => {
@@ -13,7 +14,7 @@ const CustomNode = ({ data, selected }) => {
   // Cerrar el tooltip si se hace clic fuera del nodo
   const handleClickOutside = (event) => {
     if (nodeRef.current && !nodeRef.current.contains(event.target)) {
-      setVisibleTooltip(false); // Oculta el tooltip
+      setVisibleTooltip(false);
     }
   };
 
@@ -24,19 +25,32 @@ const CustomNode = ({ data, selected }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
   return (
-    <div ref={nodeRef}>
+    <div
+      ref={nodeRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <NodeToolbar
         isVisible={visibleTooltip}
         position={Position.Bottom}
         align='center'
         offset={20}
       >
-        <ul className={`tooltip ${visibleTooltip ? 'show' : ''}`}>
+        <ul className='tooltip'>
           {Object.keys(data.node.columns).map((key) => (
             <li key={key}>{key}</li>
           ))}
         </ul>
+      </NodeToolbar>
+      <NodeToolbar
+        isVisible={isHovered}
+        posotion={Position.Top}
+        align='center'
+        offset={20}
+      >
+        Descripción del nodo
       </NodeToolbar>
 
       <div className='text-center'>

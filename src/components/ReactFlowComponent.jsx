@@ -4,7 +4,12 @@ import CustomNode from './CustomNode';
 import AnnotationNode from './AnnotationNode';
 import ContextMenu from '../components/ContextMenu';
 
-const ReactFlowComponent = ({ nodes, edges, onNodesChange, onDeleteNode }) => {
+const ReactFlowComponent = ({
+  nodes,
+  edges,
+  onNodesChange,
+  onPaneClick,
+}) => {
   const [menu, setMenu] = useState(null);
   const ref = useRef(null);
 
@@ -13,44 +18,48 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onDeleteNode }) => {
     annotationNode: AnnotationNode,
   };
 
-  const reactFlowWrapperRef = useRef(null);
-
   const onNodeContextMenu = useCallback(
     (event, node) => {
-      // Prevent native context menu from showing
-      event.preventDefault();
+      event.preventDefault(); // Evita el menú contextual nativo
 
-      // Calculate position of the context menu. We want to make sure it
-      // doesn't get positioned off-screen.
-      const pane = ref.current.getBoundingClientRect();
-      setMenu({
-        id: node.id,
-        top: event.clientY < pane.height - 200 && event.clientY,
-        left: event.clientX < pane.width - 200 && event.clientX,
-        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-        bottom:
-          event.clientY >= pane.height - 200 && pane.height - event.clientY,
-      });
+      if (ref.current) {
+        const pane = ref.current.getBoundingClientRect();
+
+        // Asegura que las posiciones sean válidas dentro del área del lienzo
+        const menuTop = Math.min(event.clientY, pane.bottom - 200);
+        const menuLeft = Math.min(event.clientX, pane.right - 200);
+
+        setMenu({
+          id: node.id,
+          top: menuTop,
+          left: menuLeft,
+        });
+      }
     },
     [setMenu]
   );
 
-  // Close the context menu if it's open whenever the window is clicked.
-  const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
+  const handlePaneClick = useCallback(() => {
+    setMenu(null); // Cierra el menú contextual al hacer clic en el lienzo
+    if (onPaneClick) onPaneClick();
+  }, [setMenu, onPaneClick]);
 
   return (
     <div
       style={{ width: '100%', height: '100vh' }}
-      ref={reactFlowWrapperRef}
+      ref={ref}
       className='relative'
     >
       <ReactFlow
+        selectionOnDrag={true} // Selección rectangular por defecto
+        panOnDrag={false} // Deshabilita el paneo al arrastrar con el botón izquierdo
+        zoomOnScroll={true}
         minZoom={0.1}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
-        onPaneClick={onPaneClick}
+        onPaneClick={handlePaneClick}
         onNodeContextMenu={onNodeContextMenu}
         fitView
       >
@@ -58,7 +67,13 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onDeleteNode }) => {
         <MiniMap />
         <Background variant='dots' gap={12} size={1} />
       </ReactFlow>
-      {menu && <ContextMenu onClick={onPaneClick} {...menu} />}
+      {menu && (
+        <ContextMenu
+          id={menu.id}
+          top={menu.top}
+          left={menu.left}
+        />
+      )}
     </div>
   );
 };
