@@ -20,6 +20,8 @@ export default function App() {
   const [fileName, setFileName] = useState('Sin título');
   const [isModified, setIsModified] = useState(false);
 
+  const [highlightedEdges, setHighlightedEdges] = useState([]);
+
   // Cargar el manifiesto al iniciar la aplicación
   useEffect(() => {
     const fetchManifest = async () => {
@@ -45,9 +47,68 @@ export default function App() {
     fetchManifest();
   }, []); // Solo se ejecuta al montar el componente
 
-  
+  const findRootNode = (nodes, filter) => {
+    const cleanFilter = filter.replace(/\+/g, '').toLowerCase();
+
+    return nodes.find((node) =>
+      node.data.label.toLowerCase().includes(cleanFilter)
+    );
+  };
+
+  const findPathToRoot = (startNodeId, edges, rootNodeId) => {
+    const path = []; // Almacena los edges del camino
+    const visited = new Set(); // Para evitar recorrer nodos repetidos
+
+    const outgoingMap = new Map(); // Mapa de edges salientes (source -> target)
+    const incomingMap = new Map(); // Mapa de edges entrantes (target -> source)
+
+    // Construir los mapas de edges
+    edges.forEach((edge) => {
+      if (!outgoingMap.has(edge.source)) outgoingMap.set(edge.source, []);
+      outgoingMap.get(edge.source).push(edge);
+
+      if (!incomingMap.has(edge.target)) incomingMap.set(edge.target, []);
+      incomingMap.get(edge.target).push(edge);
+    });
+
+    // Función para recorrer hacia abajo (padres → hijos)
+    const dfsDown = (currentNode) => {
+      if (currentNode === rootNodeId || visited.has(currentNode)) return; // Detener en el nodo raíz
+      visited.add(currentNode);
+
+      const outgoingEdges = outgoingMap.get(currentNode) || [];
+      for (const edge of outgoingEdges) {
+        if (!path.includes(edge)) {
+          path.push(edge);
+          dfsDown(edge.target); // Continuar hacia los hijos
+        }
+      }
+    };
+
+    // Función para recorrer hacia arriba (hijos → padres)
+    const dfsUp = (currentNode) => {
+      if (currentNode === rootNodeId || visited.has(currentNode)) return; // Detener en el nodo raíz
+      visited.add(currentNode);
+
+      const incomingEdges = incomingMap.get(currentNode) || [];
+      for (const edge of incomingEdges) {
+        if (!path.includes(edge)) {
+          path.push(edge);
+          dfsUp(edge.source); // Continuar hacia los padres
+        }
+      }
+    };
+
+    // Decidir si recorrer hacia arriba o hacia abajo
+    if (startNodeId !== rootNodeId) {
+      dfsUp(startNodeId); // Buscar hacia arriba
+      dfsDown(startNodeId); // Buscar hacia abajo
+    }
+
+    return path; // Devuelve el camino encontrado
+  };
+
   // Manejar cambios en los filtros (filter y visibleTypes)
-  
   const executeFilter = () => {
     const { nodes, edges } = applyFilter(
       filter,
@@ -58,10 +119,19 @@ export default function App() {
     setFilteredNodes(nodes);
     setFilteredEdges(edges);
   };
-  
+
   // Aplicar los filtros manualmente (botón "Aplicar Filtro")
   const handleFilterApply = () => {
     executeFilter();
+    const nodeFiltered = filteredNodes.find((node) =>
+      node.data.label.includes(filter)
+    );
+
+    if (nodeFiltered) {
+      handleNodeSelection(nodeFiltered.id);
+    } else {
+      setHighlightedEdges([]);
+    }
   };
 
   // Aplicar los filtros al cambiar visibleTypes
@@ -74,10 +144,55 @@ export default function App() {
     (changes) => {
       setFilteredNodes((nds) => applyNodeChanges(changes, nds));
       setIsModified(true);
+
+      // Detectar nodo seleccionado
+      const selectedNodeChange = changes.find(
+        (change) => change.selected === true
+      );
+      if (selectedNodeChange) {
+        handleNodeSelection(selectedNodeChange.id);
+      } else {
+        setHighlightedEdges([]); // Limpia los edges resaltados si no hay selección
+      }
     },
     [setFilteredNodes]
   );
 
+  const handleNodeSelection = (selectedNodeId) => {
+    if (!selectedNodeId) return;
+
+    // Encontrar el nodo raíz
+    const rootNode = findRootNode(filteredNodes, filter);
+
+    if (rootNode) {
+      // Encontrar el camino resaltado
+      const pathToRoot = findPathToRoot(
+        selectedNodeId,
+        filteredEdges,
+        rootNode.id
+      );
+
+      // Actualizar el estado de edges resaltados
+      setHighlightedEdges(pathToRoot);
+    } else {
+      console.warn('No se encontró el nodo raíz filtrado.');
+      setHighlightedEdges([]);
+    }
+  };
+
+  const getEdgeProps = (edge) => {
+    const isHighlighted = highlightedEdges.some(
+      (highlightedEdge) => highlightedEdge.id === edge.id
+    );
+
+    return {
+      animated: isHighlighted, // Activa animación solo si está resaltado
+      style: {
+        stroke: isHighlighted ? 'orange' : '#b1b1b7',
+        strokeWidth: isHighlighted ? 3 : 1,
+      },
+    };
+  };
   // Guardar un diagrama actual
   const handleSaveDiagram = async () => {
     try {
@@ -163,7 +278,10 @@ export default function App() {
       />
       <ReactFlowComponent
         nodes={filteredNodes}
-        edges={filteredEdges}
+        edges={filteredEdges.map((edge) => ({
+          ...edge,
+          ...getEdgeProps(edge),
+        }))}
         onNodesChange={handleNodesChange}
         onDeleteNode={deleteNode}
       />

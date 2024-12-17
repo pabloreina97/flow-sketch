@@ -28,9 +28,9 @@ const CustomNode = ({ data, selected }) => {
     <div ref={nodeRef}>
       <NodeToolbar
         isVisible={visibleTooltip}
-        position={Position.Top}
+        position={Position.Bottom}
         align='center'
-        offset={40}
+        offset={20}
       >
         <ul className={`tooltip ${visibleTooltip ? 'show' : ''}`}>
           {Object.keys(data.node.columns).map((key) => (
