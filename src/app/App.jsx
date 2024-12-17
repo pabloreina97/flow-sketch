@@ -11,13 +11,13 @@ export default function App() {
   filter,
   visibleTypes,
   handleFilterApply,
+  handleTypeToggle,
   handleRecalculatePositions,
   handleCreateAnnotationNode,
   handleSaveDiagram,
   handleLoadDiagram,
   getEdgeProps,
   handleNodesChange,
-  deleteNode,
   handlePaneClick,
   fileName,
   setFileName,
@@ -35,6 +35,7 @@ export default function App() {
         initialFilter={filter}
         initialVisibleTypes={visibleTypes}
         onFilterApply={(filter, visibleTypes) => handleFilterApply(filter, visibleTypes)}
+        onTypeChange={handleTypeToggle}
         onRecalculatePositions={handleRecalculatePositions}
         onCreateAnnotationNode={handleCreateAnnotationNode}
         onSaveDiagram={handleSaveDiagram}
@@ -43,7 +44,7 @@ export default function App() {
         setFileName={setFileName}
         isModified={isModified}
         setIsModified={setIsModified}
-      />
+      />  
       <ReactFlowComponent
         nodes={filteredNodes}
         edges={filteredEdges.map((edge) => ({

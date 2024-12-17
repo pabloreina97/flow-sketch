@@ -4,7 +4,6 @@ import { applyFilter } from '../../utils/applyFilter';
 import { applyNodeChanges } from '@xyflow/react';
 import { recalculatePositions } from '../../utils/recalculatePositions';
 import { findRootNode, findPathToRoot } from '../../utils/findPathToRoot';
-import { saveDiagram, loadDiagram } from '../services/fileStorage';
 
 export const useDiagramState = () => {
   // Estados para nodos y aristas
@@ -169,6 +168,15 @@ export const useDiagramState = () => {
     setHighlightedEdges([]);
   };
 
+  // Manejar cambios en los tipos visibles
+  const handleTypeToggle = (type) => {
+    setVisibleTypes((prevTypes) =>
+      prevTypes.includes(type)
+        ? prevTypes.filter((t) => t !== type)
+        : [...prevTypes, type]
+    );
+  };
+
   return {
     filteredNodes,
     filteredEdges,
@@ -178,6 +186,7 @@ export const useDiagramState = () => {
     visibleTypes,
     highlightedEdges,
     handleFilterApply,
+    handleTypeToggle,
     fileName,
     setFileName,
     isModified,

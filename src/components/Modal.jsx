@@ -10,11 +10,11 @@ const Modal = ({ title, isOpen, onClose, onConfirm, children }) => {
         <h2 className='modal-title'>{title}</h2>
         <div className='modal-body'>{children}</div>
         <div className='modal-actions'>
-          <button className='modal-button' onClick={onClose}>
+          <button className='modal-button cancel' onClick={onClose}>
             Cancelar
           </button>
           <button className='modal-button confirm' onClick={onConfirm}>
-            Confirmar
+            Guardar
           </button>
         </div>
       </div>

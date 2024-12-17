@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   BsBarChartSteps,
@@ -141,6 +141,24 @@ const Toolbar = ({
       </span>
     </div>
   );
+};
+
+
+Toolbar.propTypes = {
+  filteredNodes: PropTypes.array.isRequired,
+  filteredEdges: PropTypes.array.isRequired,
+  setFilteredNodes: PropTypes.func.isRequired,
+  setFilteredEdges: PropTypes.func.isRequired,
+  initialFilter: PropTypes.string.isRequired,
+  initialVisibleTypes: PropTypes.array.isRequired,
+  onFilterApply: PropTypes.func.isRequired,
+  onTypeChange: PropTypes.func.isRequired,
+  onRecalculatePositions: PropTypes.func.isRequired,
+  onCreateAnnotationNode: PropTypes.func.isRequired,
+  fileName: PropTypes.string.isRequired,
+  setFileName: PropTypes.func.isRequired,
+  isModified: PropTypes.bool.isRequired,
+  setIsModified: PropTypes.func.isRequired,
 };
 
 export default Toolbar;
