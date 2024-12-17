@@ -177,17 +177,17 @@ input[type='checkbox'] {
 }
 
 .react-flow__node.selectable:focus:active {
-  outline: 1.5px solid #5c5c5c;
+  outline: 1px solid #5c5c5c;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
 .react-flow__node-tooltipNode.selectable.selected {
-  font-weight: 600;
-  outline: 1.5px solid #5c5c5c;
+  outline: 1px solid #5c5c5c;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
 .react-flow__node-tooltipNode:hover {
-  outline: 1.5px solid #5c5c5c;
+  outline: 2px solid #5c5c5c;
 }
 
 .react-flow__node-annotationNode {

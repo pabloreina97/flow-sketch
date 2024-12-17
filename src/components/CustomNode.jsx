@@ -2,7 +2,7 @@ import { memo, useState, useEffect, useRef } from 'react';
 import { Handle, Position, NodeToolbar } from '@xyflow/react';
 import { GoDatabase } from 'react-icons/go';
 
-const CustomNode = ({ data }) => {
+const CustomNode = ({ data, selected }) => {
   const [visibleTooltip, setVisibleTooltip] = useState(false);
   const nodeRef = useRef(null);
 
