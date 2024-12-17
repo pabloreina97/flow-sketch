@@ -1,15 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ReactFlow, Controls, MiniMap, Background } from '@xyflow/react';
 import CustomNode from './CustomNode';
 import { useState } from 'react';
 import AnnotationNode from './AnnotationNode';
 
-const ReactFlowComponent = ({
-  nodes,
-  edges,
-  onNodesChange,
-  onDeleteNode,
-}) => {
+const ReactFlowComponent = ({ nodes, edges, onNodesChange, onDeleteNode }) => {
   const [currentNodes, setNodes] = useState(nodes);
 
   const handleSelectionChange = (selection) => {
@@ -43,19 +38,23 @@ const ReactFlowComponent = ({
     annotationNode: AnnotationNode,
   };
 
+  const reactFlowWrapperRef = useRef(null);
+
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onSelectionChange={handleSelectionChange}
-      nodeTypes={nodeTypes}
-      fitView
-    >
-      <Controls />
-      <MiniMap />
-      <Background variant='dots' gap={12} size={1} />
-    </ReactFlow>
+    <div style={{ width: '100%', height: '100vh' }} ref={reactFlowWrapperRef} className="relative">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onSelectionChange={handleSelectionChange}
+        nodeTypes={nodeTypes}
+        fitView
+      >
+        <Controls />
+        <MiniMap />
+        <Background variant='dots' gap={12} size={1} />
+      </ReactFlow>
+    </div>
   );
 };
 

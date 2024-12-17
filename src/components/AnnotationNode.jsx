@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { memo } from 'react';
-import { NodeResizer } from '@xyflow/react';
+import { NodeResizer, NodeToolbar, Position } from '@xyflow/react';
 const AnnotationNode = ({ data, selected }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.label || 'Escribe aquí');
+  const [color, setColor] = useState(data.color);
   const textareaRef = useRef(null);
 
   const adjustTextareaHeight = () => {
@@ -16,6 +17,16 @@ const AnnotationNode = ({ data, selected }) => {
   const handleInput = (e) => {
     setText(e.target.value);
     adjustTextareaHeight();
+  };
+
+  const handleColorChange = (e) => {
+    const newColor = e.target.value;
+    setColor(newColor); // Actualiza el estado local
+    if (data.onColorChange) {
+      data.onColorChange(newColor); // Llama a la función para actualizar el color en el nivel superior
+    } else {
+      data.color = newColor; // Si no hay función, actualiza directamente el dato
+    }
   };
 
   useEffect(() => {
@@ -32,11 +43,27 @@ const AnnotationNode = ({ data, selected }) => {
         padding: '8px',
         borderRadius: '4px',
         minHeight: '24px',
-        cursor: 'text',
         whiteSpace: 'pre-wrap',
         wordWrap: 'break-word',
+        color: color, // Aplica el color seleccionado al texto
       }}
     >
+      <NodeToolbar
+        
+        isVisible={selected}
+        position={Position.Top}
+        align='center'
+        offset={40}
+        className='bg-white shadow-md px-8 py-2 rounded-lg'
+      >
+        <input
+          type='color'
+          value={color}
+          onChange={handleColorChange}
+          className='w-8 h-8 rounded-full'
+        />
+      </NodeToolbar>
+
       <NodeResizer minWidth={100} minHeight={30} isVisible={selected} />
       {isEditing ? (
         <textarea

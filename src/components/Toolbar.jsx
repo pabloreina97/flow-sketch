@@ -92,6 +92,7 @@ const Toolbar = ({
               type='text'
               placeholder='Filtrar'
               className='toolbar-input'
+              value={filter}
               onChange={(e) => onFilterChange(e)}
             />
             <button

@@ -45,8 +45,10 @@ export default function App() {
     fetchManifest();
   }, []); // Solo se ejecuta al montar el componente
 
-  // Aplicar los filtros manualmente (botón "Aplicar Filtro")
-  const handleFilterApply = () => {
+  
+  // Manejar cambios en los filtros (filter y visibleTypes)
+  
+  const executeFilter = () => {
     const { nodes, edges } = applyFilter(
       filter,
       visibleTypes,
@@ -56,18 +58,16 @@ export default function App() {
     setFilteredNodes(nodes);
     setFilteredEdges(edges);
   };
+  
+  // Aplicar los filtros manualmente (botón "Aplicar Filtro")
+  const handleFilterApply = () => {
+    executeFilter();
+  };
 
-  // Manejar cambios en los filtros (filter y visibleTypes)
+  // Aplicar los filtros al cambiar visibleTypes
   useEffect(() => {
-    const { nodes, edges } = applyFilter(
-      filter,
-      visibleTypes,
-      originalNodes,
-      originalEdges
-    );
-    setFilteredNodes(nodes);
-    setFilteredEdges(edges);
-  }, [filter, visibleTypes, originalNodes, originalEdges]);
+    executeFilter();
+  }, [visibleTypes, originalNodes, originalEdges]);
 
   // Manejar cambios en los nodos filtrados
   const handleNodesChange = useCallback(
@@ -116,6 +116,7 @@ export default function App() {
       position: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
       data: {
         label: 'Escribe aquí',
+        color: '#000000',
         onChange: (newText) => {
           setFilteredNodes((prevNodes) =>
             prevNodes.map((node) =>
