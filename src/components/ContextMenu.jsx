@@ -2,8 +2,15 @@ import { useCallback, useRef, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import Modal from './Modal'; // Importamos el componente Modal
 
-export default function ContextMenu({ id, top, left, onClose }) {
-  const { getNode, setNodes, setEdges } = useReactFlow();
+export default function ContextMenu({
+  id,
+  top,
+  left,
+  onClose,
+  setNodes,
+  setEdges,
+}) {
+  const { getNode } = useReactFlow();
   const menuRef = useRef(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +33,7 @@ export default function ContextMenu({ id, top, left, onClose }) {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === id) {
-          const isEnabled = node.data.enabled !== false; // Si está habilitado o no
+          const isEnabled = node.data.enabled !== false;
           return {
             ...node,
             data: {
@@ -46,8 +53,25 @@ export default function ContextMenu({ id, top, left, onClose }) {
         return node;
       })
     );
-    onClose();
-  }, [id, setNodes]);
+
+    // Aclarar los edges conectados al nodo deshabilitado
+    setEdges((edges) =>
+      edges.map((edge) => {
+        if (edge.source === id || edge.target === id) {
+          return {
+            ...edge,
+            data: {
+              ...edge.data,
+              enabled: !edge.data.enabled, // Alterna el estado de deshabilitado
+            },
+          };
+        }
+        return edge;
+      })
+    );
+
+    onClose(); // Cerrar el menú contextual después de la acción
+  }, [id, setNodes, setEdges, onClose]);
 
   // Abrir el modal para editar la descripción
   const openEditModal = () => {

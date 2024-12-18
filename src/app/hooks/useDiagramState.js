@@ -119,12 +119,14 @@ export const useDiagramState = () => {
     const isHighlighted = highlightedEdges.some(
       (highlightedEdge) => highlightedEdge.id === edge.id
     );
+    const isEnabled = edge.data?.enabled; // Verifica si la arista está habilitada
 
     return {
-      animated: isHighlighted, // Activa animación solo si está resaltado
+      animated: isHighlighted && isEnabled, // Desactiva animación si está deshabilitada
       style: {
-        stroke: isHighlighted ? 'orange' : '#b1b1b7',
-        strokeWidth: isHighlighted ? 3 : 1,
+        stroke: isHighlighted && isEnabled ? 'orange' : '#b1b1b7',
+        strokeWidth: isHighlighted && isEnabled ? 3 : 1,
+        opacity: isEnabled ? 1 : 0.2, // Opacidad reducida si está deshabilitada
       },
     };
   };

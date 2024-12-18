@@ -53,6 +53,8 @@ export default function App() {
         }))}
         onNodesChange={handleNodesChange}
         onPaneClick={handlePaneClick}
+        setNodes={setFilteredNodes}
+        setEdges={setFilteredEdges}
       />
     </div>
   );

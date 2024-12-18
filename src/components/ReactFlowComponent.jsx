@@ -10,7 +10,7 @@ import CustomNode from './CustomNode';
 import AnnotationNode from './AnnotationNode';
 import ContextMenu from './ContextMenu';
 
-const ReactFlowComponent = ({ nodes, edges, onNodesChange, onPaneClick }) => {
+const ReactFlowComponent = ({ nodes, edges, setNodes, setEdges, onNodesChange, onPaneClick }) => {
   const [menu, setMenu] = useState(null);
   const ref = useRef(null);
 
@@ -69,7 +69,16 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onPaneClick }) => {
           <MiniMap />
           <Background variant='dots' gap={12} size={1} />
         </ReactFlow>
-        {menu && <ContextMenu id={menu.id} top={menu.top} left={menu.left} onClose={closeMenu}/>}
+        {menu && (
+          <ContextMenu
+            id={menu.id}
+            top={menu.top}
+            left={menu.left}
+            onClose={closeMenu}
+            setNodes={setNodes}
+            setEdges={setEdges}
+          />
+        )}
       </div>
     </ReactFlowProvider>
   );

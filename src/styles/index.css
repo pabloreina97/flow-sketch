@@ -208,6 +208,17 @@ input[type='checkbox'] {
   border-radius: 4px;
 }
 
+/* React Flow Edges */
+.react-flow__edge.disabled-edge {
+  stroke: #ff0000 !important;
+  opacity: 1 !important;
+}
+
+.react-flow__edge.enabled-edge {
+  stroke: #00ff00 !important;
+  opacity: 1 !important;
+}
+
 
 /* Context Menu */
 .context-menu {

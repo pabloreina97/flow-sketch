@@ -38,7 +38,7 @@ export const loadManifest = async () => {
             const edgeId = `e-${parentId}-${nodeId}`;
             if (!edgeSet.has(edgeId)) {
               edgeSet.add(edgeId);
-              return { id: edgeId, source: parentId, target: nodeId };
+              return { id: edgeId, source: parentId, target: nodeId, data: {enabled: true} };
             }
             return null;
           })
