@@ -129,7 +129,6 @@ export const useDiagramState = () => {
     };
   };
 
-
   // Crear un nuevo nodo de anotación
   const handleCreateAnnotationNode = () => {
     const newNode = {
@@ -144,6 +143,15 @@ export const useDiagramState = () => {
             prevNodes.map((node) =>
               node.id === newNode.id
                 ? { ...node, data: { ...node.data, label: newText } }
+                : node
+            )
+          );
+        },
+        onColorChange: (newColor) => {
+          setFilteredNodes((prevNodes) =>
+            prevNodes.map((node) =>
+              node.id === newNode.id
+                ? { ...node, data: { ...node.data, color: newColor } }
                 : node
             )
           );

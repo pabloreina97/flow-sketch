@@ -22,11 +22,7 @@ const AnnotationNode = ({ data, selected }) => {
   const handleColorChange = (e) => {
     const newColor = e.target.value;
     setColor(newColor); // Actualiza el estado local
-    if (data.onColorChange) {
-      data.onColorChange(newColor); // Llama a la función para actualizar el color en el nivel superior
-    } else {
-      data.color = newColor; // Si no hay función, actualiza directamente el dato
-    }
+    data.onColorChange(newColor); // Llama a la función para actualizar el color en el nivel superior
   };
 
   useEffect(() => {
@@ -49,7 +45,6 @@ const AnnotationNode = ({ data, selected }) => {
       }}
     >
       <NodeToolbar
-        
         isVisible={selected}
         position={Position.Top}
         align='center'
