@@ -50,15 +50,17 @@ const CustomNode = ({ data }) => {
           ))}
         </ul>
       </NodeToolbar>
-      <NodeToolbar
-        isVisible={isHovered && data.description !== ''}
-        position={Position.Top}
-        align='center'
-        offset={20}
-        className='description-tooltip'
-      >
-        {data.description || ''}
-      </NodeToolbar>
+      {data.enabled && (
+        <NodeToolbar
+          isVisible={isHovered && data.description !== ''}
+          position={Position.Top}
+          align='center'
+          offset={20}
+          className='description-tooltip'
+        >
+          {data.description || ''}
+        </NodeToolbar>
+      )}
       <div className='text-center'>
         <div className='text-l font-semibold text-gray-800'>{data.label}</div>
       </div>
