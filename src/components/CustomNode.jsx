@@ -1,6 +1,6 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import { Handle, Position, NodeToolbar } from '@xyflow/react';
-import { GoDatabase } from 'react-icons/go';
+import { GoDatabase, GoComment } from 'react-icons/go';
 
 const CustomNode = ({ data }) => {
   const [visibleTooltip, setVisibleTooltip] = useState(false);
@@ -29,8 +29,13 @@ const CustomNode = ({ data }) => {
   return (
     <div
       ref={nodeRef}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => {
+        nodeRef.current.hoverTimeout = setTimeout(() => setHovered(true), 500);
+      }}
+      onMouseLeave={() => {
+        clearTimeout(nodeRef.current.hoverTimeout);
+        setHovered(false);
+      }}
     >
       <NodeToolbar
         isVisible={visibleTooltip}
@@ -45,12 +50,13 @@ const CustomNode = ({ data }) => {
         </ul>
       </NodeToolbar>
       <NodeToolbar
-        isVisible={isHovered}
-        posotion={Position.Top}
+        isVisible={isHovered && data.description !== ''}
+        position={Position.Top}
         align='center'
         offset={20}
+        className='description-tooltip'
       >
-        Descripción del nodo
+        {data.description || ''}
       </NodeToolbar>
 
       <div className='text-center'>
@@ -63,15 +69,19 @@ const CustomNode = ({ data }) => {
             {data.node.config.materialized}
           </span>
         </div>
-        <button
-          className='text-gray-600 text-xs'
-          onClick={() => toogleTooltip()}
-        >
-          {Object.keys(data.node.columns).length > 0
-            ? `${Object.keys(data.node.columns).length} cols`
-            : ''}
-        </button>
-        {/* <button className='bg-gray-800 text-white p-2 rounded-lg' /> */}
+        <div className='flex gap-1 items-center justify-center'>
+          <button
+            className='text-gray-600 text-xs'
+            onClick={() => toogleTooltip()}
+          >
+            {Object.keys(data.node.columns).length > 0
+              ? `${Object.keys(data.node.columns).length} cols`
+              : ''}
+          </button>
+          {data.description !== '' && (
+            <GoComment className='text-gray-500 ml-1' />
+          )}
+        </div>
       </div>
 
       <Handle type='target' position={Position.Left} />

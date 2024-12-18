@@ -65,12 +65,13 @@ export default function ContextMenu({ id, top, left }) {
         onClose={() => setIsModalOpen(false)}
         onConfirm={saveDescription}
       >
-        <input
+        <textarea
           type='text'
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder='Nueva descripción'
           className='modal-input'
+          style={{ resize: 'none', overflow: 'auto', minHeight: '100px' }} // Altura mínima fija
         />
       </Modal>
     </>

@@ -61,6 +61,7 @@ export const loadManifest = async () => {
       type: 'tooltipNode',
       data: {
         label: node.name,
+        description: node.description,
         node,
       },
       sourcePosition: 'right',
