@@ -54,6 +54,7 @@ const ReactFlowComponent = ({ nodes, edges, setNodes, setEdges, onNodesChange, o
       >
         <ReactFlow
           selectionOnDrag={true}
+          selectionMode={'partial'}
           panOnDrag={false}
           zoomOnScroll={true}
           minZoom={0.1}
