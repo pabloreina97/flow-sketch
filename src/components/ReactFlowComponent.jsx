@@ -19,6 +19,10 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onPaneClick }) => {
     annotationNode: AnnotationNode,
   };
 
+  const closeMenu = () => {
+    setMenu(null); // Cierra el menú
+  };
+
   const onNodeContextMenu = useCallback(
     (event, node) => {
       event.preventDefault();
@@ -65,7 +69,7 @@ const ReactFlowComponent = ({ nodes, edges, onNodesChange, onPaneClick }) => {
           <MiniMap />
           <Background variant='dots' gap={12} size={1} />
         </ReactFlow>
-        {menu && <ContextMenu id={menu.id} top={menu.top} left={menu.left} />}
+        {menu && <ContextMenu id={menu.id} top={menu.top} left={menu.left} onClose={closeMenu}/>}
       </div>
     </ReactFlowProvider>
   );

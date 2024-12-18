@@ -2,17 +2,23 @@ import { useCallback, useRef, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import Modal from './Modal'; // Importamos el componente Modal
 
-export default function ContextMenu({ id, top, left }) {
+export default function ContextMenu({ id, top, left, onClose }) {
   const { getNode, setNodes, setEdges } = useReactFlow();
   const menuRef = useRef(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [description, setDescription] = useState('');
 
+  // Función para cerrar el menú
+  const closeMenu = () => {
+    if (onClose) onClose();
+  };
+
   // Eliminar nodo
   const deleteNode = useCallback(() => {
     setNodes((nodes) => nodes.filter((node) => node.id !== id));
     setEdges((edges) => edges.filter((edge) => edge.source !== id));
+    closeMenu();
   }, [id, setNodes, setEdges]);
 
   // Deshabilitar/Habilitar nodo
@@ -40,6 +46,7 @@ export default function ContextMenu({ id, top, left }) {
         return node;
       })
     );
+    onClose();
   }, [id, setNodes]);
 
   // Abrir el modal para editar la descripción
@@ -57,6 +64,7 @@ export default function ContextMenu({ id, top, left }) {
       )
     );
     setIsModalOpen(false);
+    onClose();
   };
 
   return (
