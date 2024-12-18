@@ -171,6 +171,15 @@ input[type='checkbox'] {
   padding: 8px 12px;
 }
 
+.react-flow__node-tooltipNode-disabled {
+  font-size: 14px;
+  background: #eee;
+  outline: 1px solid #ff0000;
+  border-radius: 4px;
+  text-align: center;
+  padding: 8px 12px;
+}
+
 .react-flow__node.selectable:focus:active {
   outline: 1px solid #5c5c5c;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);

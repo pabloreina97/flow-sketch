@@ -1,9 +1,9 @@
-import React, { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import Modal from './Modal'; // Importamos el componente Modal
 
 export default function ContextMenu({ id, top, left }) {
-  const { getNode, setNodes, addNodes, setEdges } = useReactFlow();
+  const { getNode, setNodes, setEdges } = useReactFlow();
   const menuRef = useRef(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,11 +18,27 @@ export default function ContextMenu({ id, top, left }) {
   // Deshabilitar/Habilitar nodo
   const toggleDisableNode = useCallback(() => {
     setNodes((nodes) =>
-      nodes.map((node) =>
-        node.id === id
-          ? { ...node, data: { ...node.data, disabled: !node.data.disabled } }
-          : node
-      )
+      nodes.map((node) => {
+        if (node.id === id) {
+          const isEnabled = node.data.enabled !== false; // Si está habilitado o no
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              enabled: !isEnabled, // Alterna el estado de enabled
+            },
+            style: isEnabled
+              ? {
+                  ...node.style,
+                  background: '#f5f5f5',
+                  color: '#b0b0b0',
+                  opacity: 0.6,
+                }
+              : { ...node.data.originalStyle }, // Restaurar estilos originales
+          };
+        }
+        return node;
+      })
     );
   }, [id, setNodes]);
 

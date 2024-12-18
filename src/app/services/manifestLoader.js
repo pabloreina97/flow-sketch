@@ -55,22 +55,28 @@ export const loadManifest = async () => {
       return '#F8EDED';
     };
 
-    const nodes = originalNodes.map(([id, node]) => ({
-      id,
-      position: positions[id],
-      type: 'tooltipNode',
-      data: {
-        label: node.name,
-        description: node.description,
-        node,
-      },
-      sourcePosition: 'right',
-      targetPosition: 'left',
-      style: {
-        background: getNodeBackgroundColor(node),
-        ...node.style,
-      },
-    }));
+const nodes = originalNodes.map(([id, node]) => ({
+  id,
+  position: positions[id],
+  type: 'tooltipNode',
+  data: {
+    label: node.name,
+    description: node.description,
+    enabled: true,
+    node,
+    originalStyle: {
+      background: getNodeBackgroundColor(node),
+      ...node.style,
+    },
+  },
+  sourcePosition: 'right',
+  targetPosition: 'left',
+  style: {
+    background: getNodeBackgroundColor(node),
+    ...node.style,
+  },
+}));
+
 
     return { nodes, edges };
   } catch (error) {

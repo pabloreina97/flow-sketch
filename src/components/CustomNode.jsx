@@ -5,6 +5,7 @@ import { GoDatabase, GoComment } from 'react-icons/go';
 const CustomNode = ({ data }) => {
   const [visibleTooltip, setVisibleTooltip] = useState(false);
   const [isHovered, setHovered] = useState(false);
+  const isEnabled = data.enabled !== false;
   const nodeRef = useRef(null);
 
   const toogleTooltip = () => {
@@ -58,32 +59,32 @@ const CustomNode = ({ data }) => {
       >
         {data.description || ''}
       </NodeToolbar>
-
       <div className='text-center'>
         <div className='text-l font-semibold text-gray-800'>{data.label}</div>
       </div>
-      <div className='flex gap-1 items-center justify-between mt-1'>
-        <div className='flex gap-1 items-center justify-center'>
-          <GoDatabase className='text-gray-500' />
-          <span className='text-gray-600 text-xs'>
-            {data.node.config.materialized}
-          </span>
+      {data.enabled && (
+        <div className='flex gap-1 items-center justify-between mt-1'>
+          <div className='flex gap-1 items-center justify-center'>
+            <GoDatabase className='text-gray-500' />
+            <span className='text-gray-600 text-xs'>
+              {data.node.config.materialized}
+            </span>
+          </div>
+          <div className='flex gap-1 items-center justify-center'>
+            <button
+              className='text-gray-600 text-xs'
+              onClick={() => toogleTooltip()}
+            >
+              {Object.keys(data.node.columns).length > 0
+                ? `${Object.keys(data.node.columns).length} cols`
+                : ''}
+            </button>
+            {data.description !== '' && (
+              <GoComment className='text-gray-500 ml-1' />
+            )}
+          </div>
         </div>
-        <div className='flex gap-1 items-center justify-center'>
-          <button
-            className='text-gray-600 text-xs'
-            onClick={() => toogleTooltip()}
-          >
-            {Object.keys(data.node.columns).length > 0
-              ? `${Object.keys(data.node.columns).length} cols`
-              : ''}
-          </button>
-          {data.description !== '' && (
-            <GoComment className='text-gray-500 ml-1' />
-          )}
-        </div>
-      </div>
-
+      )}
       <Handle type='target' position={Position.Left} />
       <Handle type='source' position={Position.Right} />
     </div>
